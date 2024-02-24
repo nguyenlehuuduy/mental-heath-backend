@@ -1,22 +1,42 @@
-import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { AccountForPost } from "./dto/AccountForPost";
-import { LocalAuthGuard } from "./local-auth.guard";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
+import { AccountForLogin } from './dto/AccountForLogin';
+import { AccountForPost } from './dto/AccountForPost';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { LocalAuthGuard } from './local-auth.guard';
 
-@Controller("auth")
+@ApiTags('auth')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post("/register")
+  @Post('/register')
+  @ApiBody({ type: AccountForPost })
   async register(@Body() accountForPost: AccountForPost) {
-    console.log("loading to create account...");
+    console.log('step1: loading to create account...');
     return this.authService.register(accountForPost);
   }
 
+  @ApiBody({ type: AccountForLogin })
   @UseGuards(LocalAuthGuard)
-  @Post("/login")
-  async login(@Request() req, @Body() accountLogin: { email: string; password: string }) {
-    console.log("loading to login...");
+  @Post('/login')
+  async login(@Request() req, @Body() accountLogin: AccountForLogin) {
+    console.log('loading to login...');
     return await this.authService.login(req.user.id, accountLogin.email);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/profile')
+  @ApiBearerAuth('Authorization')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

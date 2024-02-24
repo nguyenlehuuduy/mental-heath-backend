@@ -1,13 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
-export class AccountForPost {
-  @ApiProperty({
-    type: String,
-  })
-  @IsNotEmpty()
-  name: string;
-
+export class AccountForLogin {
   @ApiProperty({
     type: String,
   })
@@ -20,9 +14,4 @@ export class AccountForPost {
   })
   @IsNotEmpty()
   password: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  myself: string;
 }
