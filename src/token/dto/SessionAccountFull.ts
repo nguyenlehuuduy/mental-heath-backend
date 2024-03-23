@@ -1,23 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
-export class AccountForPost {
+export class SessionAccountFull {
   @ApiProperty({
     type: String,
   })
   @IsNotEmpty()
-  fullName: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  @IsNotEmpty()
-  @IsEmail({}, { message: 'Email phải đúng định dạng.' })
-  email: string;
+  refreshToken: string;
 
   @ApiProperty({
     type: String,
   })
   @IsNotEmpty()
-  password: string;
+  accessToken: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  @IsNotEmpty()
+  isExpire: boolean;
 }
