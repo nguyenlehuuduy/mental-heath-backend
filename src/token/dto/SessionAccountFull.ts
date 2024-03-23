@@ -18,5 +18,5 @@ export class SessionAccountFull {
     type: String,
   })
   @IsNotEmpty()
-  isExpire: Boolean;
+  isExpire: boolean;
 }

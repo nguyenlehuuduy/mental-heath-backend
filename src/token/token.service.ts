@@ -1,6 +1,11 @@
-import { Inject, Injectable, UnprocessableEntityException, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+  forwardRef,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SignOptions, TokenExpiredError } from 'jsonwebtoken'
+import { SignOptions, TokenExpiredError } from 'jsonwebtoken';
 import { AuthService } from 'src/auth/auth.service';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { AccountForFull } from 'src/auth/dto/AccountFull';
@@ -8,44 +13,44 @@ import { AccountForFull } from 'src/auth/dto/AccountFull';
 const BASE_OPTIONS: SignOptions = {
   issuer: 'https://genz-mental-heath********',
   audience: '******genz-mental-heath********',
-}
+};
 @Injectable()
 export class TokenService {
   public constructor(
     @Inject(forwardRef(() => AuthService))
     private auth: AuthService,
     private jwt: JwtService,
-  ) { }
+  ) {}
 
   public async generateAccessToken(account: AccountForFull): Promise<string> {
     const opts = {
       ...BASE_OPTIONS,
       expiresIn: '1d',
       subject: String(account.id),
-      secret: process.env.JWT_SECRET
+      secret: process.env.JWT_SECRET,
     };
     const token: AccountForToken = {
       email: account.email,
       fullName: account.fullName,
-      id: account.id
-    }
+      id: account.id,
+      role: 'USER',
+    };
     return this.jwt.signAsync({ token }, opts);
   }
 
-  public async generateRefreshToken(
-    account: AccountForFull,
-  ): Promise<string> {
+  public async generateRefreshToken(account: AccountForFull): Promise<string> {
     const opts = {
       ...BASE_OPTIONS,
       expiresIn: '30d',
       subject: String(account.id),
-      secret: process.env.JWT_SECRET
+      secret: process.env.JWT_SECRET,
     };
     const token: AccountForToken = {
       email: account.email,
       fullName: account.fullName,
-      id: account.id
-    }
+      id: account.id,
+      role: 'USER',
+    };
     return this.jwt.sign({ token }, opts);
   }
 
@@ -73,7 +78,7 @@ export class TokenService {
 
   private async isValidRefreshToken(
     token: string,
-    account: AccountForFull
+    account: AccountForFull,
   ): Promise<any> {
     try {
       return this.jwt.verifyAsync(token, { secret: process.env.JWT_SECRET });

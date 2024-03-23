@@ -19,8 +19,8 @@ export class AuthService {
     private prismaService: PrismaService,
     private jwtService: JwtService,
     @Inject(forwardRef(() => TokenService))
-    private tokenService: TokenService
-  ) { }
+    private tokenService: TokenService,
+  ) {}
 
   async register(accountForPost: AccountForPost) {
     try {
@@ -64,23 +64,26 @@ export class AuthService {
   async login(account: AccountForFull) {
     if (!account.refreshTokenJWT) {
       // create a new refreshToken
-      const refreshToken = await this.tokenService.generateRefreshToken(account);
+      const refreshToken =
+        await this.tokenService.generateRefreshToken(account);
       console.log(refreshToken);
       // save in account db
-      refreshToken && await this.prismaService.account.update({
-        where: { id: account.id },
-        data: {
-          refreshTokenJWT: refreshToken
-        }
-      })
+      refreshToken &&
+        (await this.prismaService.account.update({
+          where: { id: account.id },
+          data: {
+            refreshTokenJWT: refreshToken,
+          },
+        }));
       // create a new AT by RT and save in sessionAccount.db
       const accessToken = await this.tokenService.generateAccessToken(account);
-      accessToken && await this.prismaService.sessionAccount.create({
-        data: {
-          accessTokenJWT: accessToken,
-          refreshTokenJWT: refreshToken,
-        }
-      })
+      accessToken &&
+        (await this.prismaService.sessionAccount.create({
+          data: {
+            accessTokenJWT: accessToken,
+            refreshTokenJWT: refreshToken,
+          },
+        }));
       console.log('first login in one RT, login successfully!');
       return {
         access_token: accessToken,
@@ -88,14 +91,18 @@ export class AuthService {
       };
     } else {
       //generate AT by RT
-      const accessToken = await this.tokenService.createAccessTokenFromRefreshToken(account.refreshTokenJWT);
+      const accessToken =
+        await this.tokenService.createAccessTokenFromRefreshToken(
+          account.refreshTokenJWT,
+        );
       //save AT by RT in db
-      accessToken && await this.prismaService.sessionAccount.create({
-        data: {
-          accessTokenJWT: accessToken.token,
-          refreshTokenJWT: account.refreshTokenJWT,
-        }
-      })
+      accessToken &&
+        (await this.prismaService.sessionAccount.create({
+          data: {
+            accessTokenJWT: accessToken.token,
+            refreshTokenJWT: account.refreshTokenJWT,
+          },
+        }));
       console.log('another session login, login successfully!');
       return {
         access_token: accessToken.token,
@@ -108,17 +115,17 @@ export class AuthService {
     try {
       const result = await this.prismaService.account.update({
         data: {
-          refreshTokenJWT: rtnew
+          refreshTokenJWT: rtnew,
         },
         where: {
           id: idAccount,
-          refreshTokenJWT: rtold
+          refreshTokenJWT: rtold,
         },
         select: {
           id: true,
-          refreshTokenJWT: true
-        }
-      })
+          refreshTokenJWT: true,
+        },
+      });
       return result;
     } catch (error) {
       throw new BadRequestException('Request Failure');
@@ -147,7 +154,7 @@ export class AuthService {
   async findAccountByRT(refreshToken: string): Promise<AccountForFull | null> {
     try {
       return await this.prismaService.account.findFirst({
-        where: { refreshTokenJWT: refreshToken }
+        where: { refreshTokenJWT: refreshToken },
       });
     } catch (error) {
       console.log(error);

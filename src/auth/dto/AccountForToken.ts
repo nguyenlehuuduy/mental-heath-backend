@@ -19,5 +19,8 @@ export class AccountForToken {
     type: String,
   })
   @IsNotEmpty()
-  id: String;
+  id: string;
+
+  @IsNotEmpty()
+  role: string;
 }

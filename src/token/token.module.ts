@@ -9,6 +9,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Module({
   imports: [forwardRef(() => AuthModule)],
   controllers: [TokenController],
-  providers: [TokenService, AuthService, JwtService, PrismaService]
+  providers: [TokenService, AuthService, JwtService, PrismaService],
 })
-export class TokenModule { }
+export class TokenModule {}
