@@ -1,35 +1,21 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE `Account` (
+    `id` VARCHAR(191) NOT NULL,
+    `fullName` VARCHAR(191) NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NULL,
+    `aboutMe` VARCHAR(191) NULL,
+    `nickName` VARCHAR(191) NULL,
+    `birth` DATETIME(3) NULL,
+    `address` VARCHAR(191) NULL,
+    `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NULL,
+    `refreshTokenJWT` TEXT NULL,
+    `expriedTokenJWT` DATETIME(3) NULL,
 
-  - The primary key for the `account` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `myself` on the `account` table. All the data in the column will be lost.
-  - You are about to drop the column `name` on the `account` table. All the data in the column will be lost.
-  - You are about to drop the `product` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `refreshTokenJWT` to the `Account` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updated_at` to the `Account` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `username` to the `Account` table without a default value. This is not possible if the table is not empty.
-
-*/
--- AlterTable
-ALTER TABLE `account` DROP PRIMARY KEY,
-    DROP COLUMN `myself`,
-    DROP COLUMN `name`,
-    ADD COLUMN `aboutMe` VARCHAR(191) NULL,
-    ADD COLUMN `address` VARCHAR(191) NULL,
-    ADD COLUMN `birth` DATETIME(3) NULL,
-    ADD COLUMN `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    ADD COLUMN `expriedTokenJWT` DATETIME(3) NULL,
-    ADD COLUMN `fullName` VARCHAR(191) NULL,
-    ADD COLUMN `nickName` VARCHAR(191) NULL,
-    ADD COLUMN `phone` VARCHAR(191) NULL,
-    ADD COLUMN `refreshTokenJWT` VARCHAR(191) NOT NULL,
-    ADD COLUMN `updated_at` DATETIME(3) NOT NULL,
-    ADD COLUMN `username` VARCHAR(191) NOT NULL,
-    MODIFY `id` VARCHAR(191) NOT NULL,
-    ADD PRIMARY KEY (`id`);
-
--- DropTable
-DROP TABLE `product`;
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `ActionUser` (
@@ -43,9 +29,9 @@ CREATE TABLE `ActionUser` (
 -- CreateTable
 CREATE TABLE `Target` (
     `id` VARCHAR(191) NOT NULL,
-    `content` VARCHAR(191) NOT NULL,
-    `idTargetAccount` VARCHAR(191) NOT NULL,
-    `accountId` VARCHAR(191) NOT NULL,
+    `content` VARCHAR(191) NULL,
+    `idTargetAccount` VARCHAR(191) NULL,
+    `accountId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -53,8 +39,8 @@ CREATE TABLE `Target` (
 -- CreateTable
 CREATE TABLE `SessionAccount` (
     `id` VARCHAR(191) NOT NULL,
-    `accessTokenJWT` VARCHAR(191) NOT NULL,
-    `refreshTokenJWT` VARCHAR(191) NOT NULL,
+    `accessTokenJWT` TEXT NULL,
+    `refreshTokenJWT` TEXT NULL,
     `expriedAccessTokenJWT` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
@@ -63,8 +49,8 @@ CREATE TABLE `SessionAccount` (
 -- CreateTable
 CREATE TABLE `RoomMessage` (
     `id` VARCHAR(191) NOT NULL,
-    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
+    `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -241,7 +227,7 @@ CREATE TABLE `_AccountToRoomMessage` (
 ALTER TABLE `ActionUser` ADD CONSTRAINT `ActionUser_idTarget_fkey` FOREIGN KEY (`idTarget`) REFERENCES `Target`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Target` ADD CONSTRAINT `Target_accountId_fkey` FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Target` ADD CONSTRAINT `Target_accountId_fkey` FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Messages` ADD CONSTRAINT `Messages_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

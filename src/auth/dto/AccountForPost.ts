@@ -6,7 +6,7 @@ export class AccountForPost {
     type: String,
   })
   @IsNotEmpty()
-  name: string;
+  fullName: string;
 
   @ApiProperty({
     type: String,
@@ -20,9 +20,4 @@ export class AccountForPost {
   })
   @IsNotEmpty()
   password: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  myself: string;
 }

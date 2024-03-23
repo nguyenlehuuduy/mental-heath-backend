@@ -14,10 +14,202 @@ datasource db {
 }
 
 model Account {
-  id Int @id @default(autoincrement())
-  name String
-  email String
-  password String
-  myself String?
+  id                    String          @id @default(uuid())
+  fullName              String?
+  email                 String
+  password              String
+  phone                 String?
+  aboutMe               String?
+  nickName              String?
+  birth                 DateTime?
+  address               String?
+  posts                 Post[]
+  followers             Follower[]      @relation("Following")
+  following             Follower[]      @relation("Follower")
+  postShares            PostShare[]
+  comments              Comment[]
+  reactions             Reaction[]
+  images                Image[]
+  roles                 Role[]
+  Room                  RoomMessage[]
+  Messages              Messages[]
+  created_at            DateTime?       @default(now())
+  updated_at            DateTime?       @updatedAt
+  refreshTokenJWT       String?         @db.Text
+  expriedTokenJWT       DateTime?
+  Target                Target[]
+  RequestFollow         RequestFollow[] @relation("RequestFollow")
+  AcceptOrCancelRequest RequestFollow[] @relation("AcceptOrCancelRequest")
 }
 
+model ActionUser {
+  id         String  @id @default(uuid())
+  actionCode String
+  idTarget   String
+  target     Target? @relation(fields: [idTarget], references: [id])
+}
+
+model Target {
+  id              String       @id @default(uuid())
+  content         String?
+  idTargetAccount String?
+  targetAccount   Account?     @relation(fields: [accountId], references: [id])
+  accountId       String?
+  ActionUser      ActionUser[]
+}
+
+model SessionAccount {
+  id                    String    @id @default(uuid())
+  accessTokenJWT        String?   @db.Text
+  refreshTokenJWT       String?   @db.Text
+  expriedAccessTokenJWT DateTime?
+}
+
+model RoomMessage {
+  id            String     @id @default(uuid())
+  accountInRoom Account[]
+  Messages      Messages[]
+  created_at    DateTime?  @default(now())
+  updated_at    DateTime?  @updatedAt
+}
+
+model Messages {
+  id         String      @id @default(uuid())
+  ownerId    String
+  owner      Account     @relation(fields: [ownerId], references: [id])
+  roomId     String
+  room       RoomMessage @relation(fields: [roomId], references: [id])
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+}
+
+model Role {
+  id              String    @id @default(uuid())
+  nameRole        String
+  descriptionRole String
+  account         Account[]
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}
+
+model RequestFollow {
+  id        String  @id @default(uuid())
+  senderId  String
+  sender    Account @relation("RequestFollow", fields: [senderId], references: [id])
+  reciverId String
+  reciver   Account @relation("AcceptOrCancelRequest", fields: [reciverId], references: [id])
+}
+
+model Follower {
+  id          String   @id @default(uuid())
+  accountId   String
+  follower    Account  @relation("Following", fields: [followerId], references: [id])
+  followerId  String
+  following   Account  @relation("Follower", fields: [followingId], references: [id])
+  followingId String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model Post {
+  id               String         @id @default(uuid())
+  contentText      String
+  accountId        String
+  account          Account        @relation(fields: [accountId], references: [id])
+  postShares       PostShare[]
+  comments         Comment[]
+  reactions        Reaction[]
+  images           Image[]
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+  permissionPostId String?
+  permissionPost   PermisionPost? @relation(fields: [permissionPostId], references: [id])
+}
+
+model PermisionPost {
+  id          String @id @default(uuid())
+  code        String
+  description String
+  Post        Post[]
+}
+
+model Image {
+  id          String     @id @default(uuid())
+  path        String
+  accountId   String
+  postId      String
+  account     Account    @relation(fields: [accountId], references: [id])
+  post        Post       @relation(fields: [postId], references: [id])
+  typeImage   TypeImage? @relation(fields: [typeImageId], references: [id])
+  typeImageId String?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+}
+
+model TypeImage {
+  id            String   @id @default(uuid())
+  typeImageName String
+  image         Image[]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
+model PostShare {
+  id         String     @id @default(uuid())
+  accountId  String
+  postId     String
+  content    String
+  account    Account    @relation(fields: [accountId], references: [id])
+  post       Post       @relation(fields: [postId], references: [id])
+  comments   Comment[]
+  reactions  Reaction[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+}
+
+model Comment {
+  id           String    @id @default(uuid())
+  contentCmt   String
+  accountId    String
+  postId       String
+  account      Account   @relation(fields: [accountId], references: [id])
+  post         Post      @relation(fields: [postId], references: [id])
+  postSharedId String
+  postShared   PostShare @relation(fields: [postSharedId], references: [id])
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+}
+
+model Reaction {
+  id          String    @id @default(uuid())
+  accountId   String
+  account     Account   @relation(fields: [accountId], references: [id])
+  postId      String
+  post        Post      @relation(fields: [postId], references: [id])
+  postShareId String
+  postShare   PostShare @relation(fields: [postShareId], references: [id])
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+}
+
+model Notification {
+  id                   String           @id @default(uuid())
+  accountId            String
+  postId               String?
+  postShareId          String?
+  commentId            String?
+  reactionId           String?
+  followerId           String?
+  messageNotifications String?
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+  typeNotificationId   String
+  typeNotification     TypeNotification @relation(fields: [typeNotificationId], references: [id])
+}
+
+model TypeNotification {
+  id           String         @id @default(uuid())
+  typeName     String
+  description  String
+  notification Notification[]
+}
