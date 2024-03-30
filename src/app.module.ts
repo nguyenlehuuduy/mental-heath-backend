@@ -5,6 +5,7 @@ import { TokenModule } from './token/token.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CaslModule } from './casl/casl.module';
 import { UsersModule } from './users/users.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module';
     }),
     CaslModule,
     UsersModule,
+    PostModule,
   ],
   controllers: [],
   providers: [],
