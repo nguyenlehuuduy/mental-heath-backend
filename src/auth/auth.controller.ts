@@ -23,7 +23,7 @@ import { AbilitiesGuard } from 'src/guard/ability.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/register')
   @ApiBody({ type: AccountForPost })
