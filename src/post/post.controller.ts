@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -34,7 +35,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) {}
+  ) { }
 
   @Post()
   @ApiBody({ type: PostForCreate })
@@ -72,5 +73,19 @@ export class PostController {
       return await this.postService.deletePost(id, req?.user);
     }
     throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
+  }
+
+  @Get("/mock-data")
+  async getMockDataNormalPost() {
+    console.log("loading to mock...")
+    return await this.postService.mockDataFaker();
+  }
+
+  @Get("/valid-post")
+  @ApiBearerAuth('Authorization')
+  @Roles(Role.User)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  async getValidPostByUser(@Request() req) {
+    return await this.postService.getValidPostByAccount(req?.user?.id)
   }
 }

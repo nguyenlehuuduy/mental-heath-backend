@@ -21,5 +21,19 @@ export class PostForResponse {
   @ApiProperty()
   account?: Account;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  created_at: Date | string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  updated_at: Date | string;
+
+  @ApiProperty()
+  totalReaction: number;
+  @ApiProperty()
+  totalComment: number;
+  @ApiProperty()
+  totalShare: number;
   //TODO: react, comment,... later
 }

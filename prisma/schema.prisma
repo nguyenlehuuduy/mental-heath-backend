@@ -109,12 +109,16 @@ model Follower {
   followingId String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  piority     Int?
 }
 
 model Post {
   id               String         @id @default(uuid())
   contentText      String
   accountId        String
+  totalReaction    Int?
+  totalComment     Int?
+  totalShare       Int?
   account          Account        @relation(fields: [accountId], references: [id])
   postShares       PostShare[]
   comments         Comment[]
@@ -168,28 +172,28 @@ model PostShare {
 }
 
 model Comment {
-  id           String    @id @default(uuid())
+  id           String     @id @default(uuid())
   contentCmt   String
   accountId    String
   postId       String
-  account      Account   @relation(fields: [accountId], references: [id])
-  post         Post      @relation(fields: [postId], references: [id])
-  postSharedId String
-  postShared   PostShare @relation(fields: [postSharedId], references: [id])
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  account      Account    @relation(fields: [accountId], references: [id])
+  post         Post       @relation(fields: [postId], references: [id])
+  postSharedId String?
+  postShared   PostShare? @relation(fields: [postSharedId], references: [id])
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @updatedAt
 }
 
 model Reaction {
-  id          String    @id @default(uuid())
+  id          String     @id @default(uuid())
   accountId   String
-  account     Account   @relation(fields: [accountId], references: [id])
+  account     Account    @relation(fields: [accountId], references: [id])
   postId      String
-  post        Post      @relation(fields: [postId], references: [id])
-  postShareId String
-  postShare   PostShare @relation(fields: [postShareId], references: [id])
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  post        Post       @relation(fields: [postId], references: [id])
+  postShareId String?
+  postShare   PostShare? @relation(fields: [postShareId], references: [id])
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
 }
 
 model Notification {
