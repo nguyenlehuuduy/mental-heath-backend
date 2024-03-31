@@ -4,7 +4,6 @@ import { PrismaModule } from './prisma/prisma.module';
 import { TokenModule } from './token/token.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CaslModule } from './casl/casl.module';
-import { UsersModule } from './users/users.module';
 import { PostModule } from './post/post.module';
 
 @Module({
@@ -19,10 +18,9 @@ import { PostModule } from './post/post.module';
       },
     }),
     CaslModule,
-    UsersModule,
     PostModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
