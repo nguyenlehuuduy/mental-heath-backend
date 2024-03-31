@@ -8,6 +8,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { Role } from 'src/decorator/role.enum';
+import { PostForResponse } from 'src/post/dto/PostForResponse';
 
 export enum Action {
   Manage = 'manage',
@@ -16,7 +17,7 @@ export enum Action {
   Update = 'update',
   Delete = 'delete',
 }
-export type Subjects = InferSubjects<typeof AccountForToken> | 'all';
+export type Subjects = InferSubjects<typeof AccountForToken | typeof PostForResponse> | 'all';
 export type AppAbility = Ability<[Action, Subjects]>;
 
 @Injectable()
@@ -32,6 +33,12 @@ export class CaslAbilityFactory {
     } else {
       //This is USER PERMISION
       can(Action.Read, 'all');
+      can(Action.Update, PostForResponse, {
+        accountId: account.id
+      })
+      can(Action.Delete, PostForResponse, {
+        accountId: account.id
+      })
     }
     return build({
       detectSubjectType: (subject) =>

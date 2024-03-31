@@ -1,20 +1,72 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import { PostForCreate } from './dto/PostForCreate';
+import { PostForResponse } from './dto/PostForResponse';
+import { PostForUpdate } from './dto/PostForUpdate';
+import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class PostService {
-  constructor(
-    private prismaService: PrismaService,
-  ) { }
-  private shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
+  constructor(private prismaService: PrismaService) { }
+  async createPost(
+    postRequest: PostForCreate,
+    account: AccountForToken,
+  ): Promise<PostForResponse> {
+    try {
+      return await this.prismaService.post.create({
+        data: {
+          contentText: postRequest.contentText,
+          accountId: account.id,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
-  private getRandomIntInclusive(min: number, max: number) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+
+  async updatePost(
+    postRequest: PostForUpdate,
+    account: AccountForToken,
+  ): Promise<PostForResponse> {
+    try {
+      return await this.prismaService.post.update({
+        where: { id: postRequest.id, accountId: account.id },
+        data: {
+          contentText: postRequest.contentText,
+          //TODO: update Image latter
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
-  async getValidPostByAccount(idAccount: string) {
+
+  async deletePost(id: string, account: AccountForToken) {
+    try {
+      return await this.prismaService.post.delete({
+        where: { accountId: account.id, id: id },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getDetailPostById(id: string) {
+    try {
+      return await this.prismaService.post.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getValidPostByAccount(idAccount: string): Promise<PostForResponse> {
     const today = new Date();
     const sevenDaysAgo = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
     try {
@@ -118,46 +170,46 @@ export class PostService {
           take: 10
         }))
       }
-      return key_num
 
     } catch (error) {
       console.error(error);
       throw new BadRequestException(error);
     }
   }
+
   async mockDataFaker() {
-    // return Array.from({ length: 10 }).map(async (_, i) => {
-    //   mock data
-    //   await this.prismaService.post.create({
-    //     data: {
-    //       id: faker.string.uuid(),
-    //       account: {
-    //         create: {
-    //           id: faker.string.uuid(),
-    //           email: faker.internet.email(),
-    //           fullName: faker.person.fullName(),
-    //           password: faker.string.uuid(),
-    //           phone: faker.number.bigInt({ min: 111111111, max: 9999999999 }).toString(),
-    //           aboutMe: faker.airline.recordLocator(),
-    //           nickName: faker.animal.bear(),
-    //           birth: faker.date.anytime(),
-    //           address: faker.company.name(),
-    //         }
-    //       },
-    //       contentText: faker.airline.recordLocator(),
-    //       created_at: faker.date.anytime(),
-    //       updated_at: faker.date.anytime(),
-    //     }
-    //   })
+    return Array.from({ length: 10 }).map(async (_, i) => {
+      // mock data
+      await this.prismaService.post.create({
+        data: {
+          id: faker.string.uuid(),
+          account: {
+            create: {
+              id: faker.string.uuid(),
+              email: faker.internet.email(),
+              fullName: faker.person.fullName(),
+              password: faker.string.uuid(),
+              phone: faker.number.bigInt({ min: 111111111, max: 9999999999 }).toString(),
+              aboutMe: faker.airline.recordLocator(),
+              nickName: faker.animal.bear(),
+              birth: faker.date.anytime(),
+              address: faker.company.name(),
+            }
+          },
+          contentText: faker.airline.recordLocator(),
+          created_at: faker.date.anytime(),
+          updated_at: faker.date.anytime(),
+        }
+      })
 
 
-    // })
+    })
     // return Array.from({ length: 10 }).map(async (_, i) => {
     //   console.log(i + "created")
     //   await this.prismaService.follower.create({
     //     data: {
     //       id: faker.string.uuid(),
-    //       accountId: "63953da9-f4eb-4259-9f7f-e43888b9de23",
+    //       accountId: "82bfecd4-b8fe-4513-ad76-0f39668be778",
     //       follower: {
     //         create: {
     //           id: faker.string.uuid(),
@@ -194,18 +246,18 @@ export class PostService {
     //               totalReaction: faker.number.int({ min: 111, max: 999 }),
     //               reactions: {
     //                 create: [{
-    //                   accountId: "4504d830-6059-4808-84b5-039a7ffd7630",
+    //                   accountId: "3a81c142-b096-441b-a35b-a1a4f931c691",
     //                 }]
     //               },
     //               comments: {
     //                 create: [{
-    //                   accountId: "4504d830-6059-4808-84b5-039a7ffd7630",
+    //                   accountId: "3a81c142-b096-441b-a35b-a1a4f931c691",
     //                   contentCmt: "bài viét này thật bổ ích",
     //                 }]
     //               },
     //               postShares: {
     //                 create: [{
-    //                   accountId: "4504d830-6059-4808-84b5-039a7ffd7630",
+    //                   accountId: "3a81c142-b096-441b-a35b-a1a4f931c691",
     //                   content: "tôi đã share bài viết này"
     //                 }]
     //               }
@@ -221,4 +273,13 @@ export class PostService {
     // })
   }
 
+  private shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  private getRandomIntInclusive(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 }
