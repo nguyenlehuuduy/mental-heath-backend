@@ -2,58 +2,75 @@ import {
   Body,
   Controller,
   Delete,
+  HttpException,
   HttpStatus,
   Param,
   Patch,
   Post,
-  Res,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { PostService } from './post.service';
-import { PostDto } from './dto/post';
+import { Roles } from 'src/decorator/roles.decorator';
+import { Role } from 'src/decorator/role.enum';
+import { AuthenticationGuard } from 'src/guard/authentication.guard';
+import { AuthorizationGuard } from 'src/guard/authorization.guard';
+import {
+  Action,
+  CaslAbilityFactory,
+} from 'src/casl/casl-ability.factory/casl-ability.factory';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import { PostForCreate } from './dto/PostForCreate';
+import { PostForUpdate } from './dto/PostForUpdate';
+import { PostForResponse } from './dto/PostForResponse';
 
 @ApiTags('post')
 @Controller('post')
+@ApiBearerAuth('Authorization')
+@Roles(Role.User)
+@UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private caslAbilityFactory: CaslAbilityFactory,
+  ) {}
 
-  @Post('/createPost')
-  @ApiBody({ type: PostDto })
-  async createPost(@Body() postRequest: PostDto, @Res() response: Response) {
-    const postCreate = await this.postService.createPost(postRequest);
-    response.status(HttpStatus.CREATED).json({
-      data: postCreate,
-      message: 'Create post successfully',
-      status: HttpStatus.CREATED,
-    });
+  @Post()
+  @ApiBody({ type: PostForCreate })
+  async createPost(@Body() postForCreate: PostForCreate, @Request() req) {
+    return await this.postService.createPost(postForCreate, req?.user);
   }
 
-  @Patch('/updatePost/:id')
-  @ApiBody({ type: PostDto })
-  async updatePost(
-    @Param('id') id: string,
-    @Body() postRequest: PostDto,
-    @Res() response: Response,
-  ) {
-    const postUpdate = await this.postService.updatePost(id, postRequest);
-    response.status(HttpStatus.OK).json({
-      data: postUpdate,
-      message: 'Update post successfully',
-      status: HttpStatus.OK,
-    });
+  @Patch()
+  @ApiBody({ type: PostForUpdate })
+  async updatePost(@Body() postRequest: PostForUpdate, @Request() req) {
+    const post = new PostForResponse();
+    const account = new AccountForToken();
+    const postDetail = await this.postService.getDetailPostById(postRequest.id);
+    post.accountId = postDetail.accountId;
+    account.id = req?.user?.id;
+    const ability = this.caslAbilityFactory.defineAbility(account);
+    const permision = ability.can(Action.Update, post);
+    if (permision) {
+      return await this.postService.updatePost(postRequest, req?.user);
+    }
+    throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
   }
 
-  @Delete('/deletePost/:id')
+  @Delete('/:id')
   @ApiParam({ name: 'id', type: String })
-  async deletePost(
-    @Param('id') id: string,
-    @Body() accountId: string,
-    @Res() response: Response,
-  ) {
-    await this.postService.deletePost(id, accountId);
-    response.status(HttpStatus.OK).json({
-      message: 'Delete post successfully',
-      status: HttpStatus.OK,
-    });
+  async deletePost(@Param('id') id: string, @Request() req) {
+    const post = new PostForResponse();
+    const account = new AccountForToken();
+    const postDetail = await this.postService.getDetailPostById(id);
+    post.accountId = postDetail.accountId;
+    account.id = req?.user?.id;
+    const ability = this.caslAbilityFactory.defineAbility(account);
+    const permision = ability.can(Action.Delete, post);
+    if (permision) {
+      return await this.postService.deletePost(id, req?.user);
+    }
+    throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
   }
 }

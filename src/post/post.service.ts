@@ -1,49 +1,66 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PostDto } from './dto/post';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import { PostForCreate } from './dto/PostForCreate';
+import { PostForResponse } from './dto/PostForResponse';
+import { PostForUpdate } from './dto/PostForUpdate';
 
 @Injectable()
 export class PostService {
   constructor(private prismaService: PrismaService) {}
-  async createPost(postRequest: PostDto) {
+  async createPost(
+    postRequest: PostForCreate,
+    account: AccountForToken,
+  ): Promise<PostForResponse> {
     try {
-      const { contentText, accountId } = postRequest;
-      const post = await this.prismaService.post.create({
+      return await this.prismaService.post.create({
         data: {
-          contentText: contentText,
-          accountId: accountId,
+          contentText: postRequest.contentText,
+          accountId: account.id,
         },
       });
-      return post;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async updatePost(id: string, postRequest: PostDto) {
+  async updatePost(
+    postRequest: PostForUpdate,
+    account: AccountForToken,
+  ): Promise<PostForResponse> {
     try {
-      const { contentText, accountId } = postRequest;
-      const post = await this.prismaService.post.update({
-        where: { id: id, accountId: accountId },
+      return await this.prismaService.post.update({
+        where: { id: postRequest.id, accountId: account.id },
         data: {
-          contentText: contentText,
+          contentText: postRequest.contentText,
+          //TODO: update Image latter
         },
       });
-      return post;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async deletePost(id: string, accountId: string) {
+  async deletePost(id: string, account: AccountForToken) {
     try {
-      await this.prismaService.post.delete({
-        where: { accountId: accountId, id: id },
+      return await this.prismaService.post.delete({
+        where: { accountId: account.id, id: id },
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getDetailPostById(id: string) {
+    try {
+      return await this.prismaService.post.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
