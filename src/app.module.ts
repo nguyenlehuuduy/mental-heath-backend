@@ -5,6 +5,7 @@ import { TokenModule } from './token/token.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CaslModule } from './casl/casl.module';
 import { PostModule } from './post/post.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,8 +20,9 @@ import { PostModule } from './post/post.module';
     }),
     CaslModule,
     PostModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
