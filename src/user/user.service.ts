@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserForUpdate } from './dto/UserForUpdate';
+import { UserForResponse } from './dto/UserForResponse';
 
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
-  async getDetailUserById(userId: string) {
+  async getDetailUserById(userId: string): Promise<UserForResponse> {
     try {
       const user = await this.prismaService.account.findUnique({
         where: { id: userId },
@@ -19,7 +20,7 @@ export class UserService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
-  async updateUser(userInfoRequest: UserForUpdate) {
+  async updateUser(userInfoRequest: UserForUpdate): Promise<UserForResponse> {
     try {
       return await this.prismaService.account.update({
         where: { id: userInfoRequest.id },
