@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Patch,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
@@ -19,6 +20,7 @@ import {
 } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { UserForUpdate } from './dto/UserForUpdate';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import { UserForResponse } from './dto/UserForResponse';
 
 @ApiTags('user')
 @Controller('user')
@@ -29,20 +31,23 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) {}
+  ) { }
 
   @Patch('/updateInfo/:id')
   @ApiBody({ type: UserForUpdate })
   async updateUser(
     @Body() userInfoRequest: UserForUpdate,
     @Param('id') userId: string,
+    @Request() req
   ) {
     try {
       const account = new AccountForToken();
+      account.id = req?.user?.id;
       const infoUser = await this.userService.getDetailUserById(userId);
-      account.id = infoUser.id;
+      const accountInPermission = new UserForResponse();
+      accountInPermission.id = infoUser?.id;
       const ability = this.caslAbilityFactory.defineAbility(account);
-      if (ability.can(Action.Update, account)) {
+      if (ability.can(Action.Update, accountInPermission)) {
         return await this.userService.updateUser(userInfoRequest);
       }
       throw new HttpException(

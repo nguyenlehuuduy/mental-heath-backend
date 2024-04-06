@@ -5,7 +5,7 @@ import { UserForResponse } from './dto/UserForResponse';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   async getDetailUserById(userId: string): Promise<UserForResponse> {
     try {
       const user = await this.prismaService.account.findUnique({
@@ -33,6 +33,15 @@ export class UserService {
           birth: userInfoRequest.birth,
           address: userInfoRequest.address,
         },
+        select: {
+          id: true,
+          fullName: true,
+          phone: true,
+          aboutMe: true,
+          nickName: true,
+          birth: true,
+          address: true
+        }
       });
     } catch (error) {
       console.error(error);
