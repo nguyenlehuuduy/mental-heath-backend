@@ -217,3 +217,24 @@ model TypeNotification {
   description  String
   notification Notification[]
 }
+
+model Feature {
+  id                String @id @default(uuid())
+  name              String
+  thumbnailFileName String
+  url               String
+}
+
+model TabMenu {
+  id      String @id @default(uuid())
+  name    String
+  iconUrl String
+  url     String
+}
+
+model HotContent {
+  id                String @id @default(uuid())
+  title             String
+  thumbnailFileName String
+  url               String
+}

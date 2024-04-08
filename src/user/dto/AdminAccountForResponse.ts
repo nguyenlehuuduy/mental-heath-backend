@@ -11,7 +11,9 @@ export class AdminAccountForResponse {
   @IsNotEmpty()
   fullName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: [RoleForGet]
+  })
   @IsNotEmpty()
   roles: Array<RoleForGet>;
 

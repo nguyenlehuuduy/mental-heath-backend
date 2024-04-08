@@ -13,6 +13,7 @@ import { AccountForPost } from './dto/AccountForPost';
 import { AccountForFull } from './dto/AccountFull';
 import { TokenService } from 'src/token/token.service';
 import { AccountForToken } from './dto/AccountForToken';
+import { AccountForLoginResponse } from './dto/AccountForLoginResponse';
 
 @Injectable()
 export class AuthService {
@@ -76,7 +77,7 @@ export class AuthService {
     return null;
   }
 
-  async login(account: AccountForFull) {
+  async login(account: AccountForFull): Promise<AccountForLoginResponse> {
     if (!account.refreshTokenJWT) {
       // create a new refreshToken
       const refreshToken =

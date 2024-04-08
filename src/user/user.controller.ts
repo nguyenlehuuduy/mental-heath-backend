@@ -8,7 +8,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/decorator/role.enum';
 import { Roles } from 'src/decorator/roles.decorator';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
@@ -22,6 +22,7 @@ import { UserForUpdate } from './dto/UserForUpdate';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { UserForResponse } from './dto/UserForResponse';
 import { AdminAccountForPut } from './dto/AdminAccountForPut';
+import { AdminAccountForResponse } from './dto/AdminAccountForResponse';
 
 @ApiTags('user')
 @Controller('user')
@@ -36,13 +37,15 @@ export class UserController {
 
   @Patch()
   @ApiBody({ type: UserForUpdate })
+  @ApiOkResponse({
+    type: UserForResponse,
+  })
   async updateUser(
     @Body() userInfoRequest: UserForUpdate,
     @Param('id') userId: string,
     @Request() req
   ) {
     try {
-      console.log("adasasdasd", userId);
       const account = new AccountForToken();
       account.id = req?.user?.id;
       const infoUser = await this.userService.getDetailUserById(userId);
@@ -63,6 +66,9 @@ export class UserController {
   }
 
   @Patch("/update-account-admin")
+  @ApiOkResponse({
+    type: AdminAccountForResponse,
+  })
   @Roles(Role.Admin)
   async updateAdministratorAccount(@Body() accountForUpdateAdminRole: AdminAccountForPut) {
     return await this.userService.updateAdministratorAccount(accountForUpdateAdminRole)
