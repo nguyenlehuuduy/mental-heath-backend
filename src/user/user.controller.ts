@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -72,5 +73,10 @@ export class UserController {
   @Roles(Role.Admin)
   async updateAdministratorAccount(@Body() accountForUpdateAdminRole: AdminAccountForPut) {
     return await this.userService.updateAdministratorAccount(accountForUpdateAdminRole)
+  }
+
+  @Get("/suggestFollow")
+  async suggestFollowForAccount() {
+
   }
 }

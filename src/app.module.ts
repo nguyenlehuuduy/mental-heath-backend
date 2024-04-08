@@ -7,6 +7,9 @@ import { CaslModule } from './casl/casl.module';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
+import { FeatureModule } from './feature/feature.module';
+import { HotContentModule } from './hot-content/hot-content.module';
+import { TabMenuModule } from './tab-menu/tab-menu.module';
 
 @Module({
   imports: [
@@ -23,6 +26,9 @@ import { RoleModule } from './role/role.module';
     PostModule,
     UserModule,
     RoleModule,
+    FeatureModule,
+    HotContentModule,
+    TabMenuModule,
   ],
   controllers: [],
   providers: [],
