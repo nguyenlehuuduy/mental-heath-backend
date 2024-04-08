@@ -21,6 +21,7 @@ import {
 import { UserForUpdate } from './dto/UserForUpdate';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { UserForResponse } from './dto/UserForResponse';
+import { AdminAccountForPut } from './dto/AdminAccountForPut';
 
 @ApiTags('user')
 @Controller('user')
@@ -33,7 +34,7 @@ export class UserController {
     private caslAbilityFactory: CaslAbilityFactory,
   ) { }
 
-  @Patch('/updateInfo/:id')
+  @Patch()
   @ApiBody({ type: UserForUpdate })
   async updateUser(
     @Body() userInfoRequest: UserForUpdate,
@@ -41,6 +42,7 @@ export class UserController {
     @Request() req
   ) {
     try {
+      console.log("adasasdasd", userId);
       const account = new AccountForToken();
       account.id = req?.user?.id;
       const infoUser = await this.userService.getDetailUserById(userId);
@@ -58,5 +60,11 @@ export class UserController {
       console.error(error);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @Patch("/update-account-admin")
+  @Roles(Role.Admin)
+  async updateAdministratorAccount(@Body() accountForUpdateAdminRole: AdminAccountForPut) {
+    return await this.userService.updateAdministratorAccount(accountForUpdateAdminRole)
   }
 }

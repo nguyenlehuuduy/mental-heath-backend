@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { Role } from 'src/decorator/role.enum';
 
 export class AccountForToken {
   @ApiProperty({
@@ -22,5 +23,5 @@ export class AccountForToken {
   id: string;
 
   @IsNotEmpty()
-  role: string;
+  roles: Array<Role>;
 }

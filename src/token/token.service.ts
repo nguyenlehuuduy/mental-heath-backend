@@ -9,6 +9,7 @@ import { SignOptions, TokenExpiredError } from 'jsonwebtoken';
 import { AuthService } from 'src/auth/auth.service';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { AccountForFull } from 'src/auth/dto/AccountFull';
+import { Role } from 'src/decorator/role.enum';
 
 const BASE_OPTIONS: SignOptions = {
   issuer: 'https://genz-mental-heath********',
@@ -20,9 +21,10 @@ export class TokenService {
     @Inject(forwardRef(() => AuthService))
     private auth: AuthService,
     private jwt: JwtService,
-  ) {}
+  ) { }
 
   public async generateAccessToken(account: AccountForFull): Promise<string> {
+    const rolesInAccount = account.roles?.map(item => item.nameRole as Role).filter(Boolean);
     const opts = {
       ...BASE_OPTIONS,
       expiresIn: '1d',
@@ -33,12 +35,13 @@ export class TokenService {
       email: account.email,
       fullName: account.fullName,
       id: account.id,
-      role: 'USER',
+      roles: rolesInAccount.length > 0 ? rolesInAccount : [Role.User]
     };
     return this.jwt.signAsync({ token }, opts);
   }
 
   public async generateRefreshToken(account: AccountForFull): Promise<string> {
+    const rolesInAccount = account.roles.map(item => item.nameRole as Role).filter(Boolean);
     const opts = {
       ...BASE_OPTIONS,
       expiresIn: '30d',
@@ -49,7 +52,7 @@ export class TokenService {
       email: account.email,
       fullName: account.fullName,
       id: account.id,
-      role: 'USER',
+      roles: rolesInAccount.length > 0 ? rolesInAccount : [Role.User]
     };
     return this.jwt.sign({ token }, opts);
   }

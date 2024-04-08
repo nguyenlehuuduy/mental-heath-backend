@@ -20,8 +20,8 @@ export enum Action {
 }
 export type Subjects =
   | InferSubjects<
-      typeof AccountForToken | typeof PostForResponse | typeof UserForResponse
-    >
+    typeof AccountForToken | typeof PostForResponse | typeof UserForResponse
+  >
   | 'all';
 export type AppAbility = Ability<[Action, Subjects]>;
 
@@ -32,7 +32,7 @@ export class CaslAbilityFactory {
     const { can, build } = new AbilityBuilder(
       Ability as AbilityClass<AppAbility>,
     );
-    if (account?.role === Role.Admin) {
+    if (account?.roles.includes(Role.Admin)) {
       //IF ADMIN, you can do anything;
       can(Action.Manage, 'all');
     } else {
