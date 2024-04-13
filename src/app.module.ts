@@ -6,6 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { CaslModule } from './casl/casl.module';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
+import { LikeModule } from './like/like.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { UserModule } from './user/user.module';
     CaslModule,
     PostModule,
     UserModule,
+    LikeModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [],
