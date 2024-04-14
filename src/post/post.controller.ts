@@ -8,10 +8,11 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PostService } from './post.service';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/decorator/role.enum';
@@ -24,7 +25,8 @@ import {
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { PostForCreate } from './dto/PostForCreate';
 import { PostForUpdate } from './dto/PostForUpdate';
-import { PostForResponse } from './dto/PostForResponse';
+import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
+import { PaginationAndFilter } from 'src/common/schema/pagination';
 
 @ApiTags('post')
 @Controller('post')
@@ -39,12 +41,18 @@ export class PostController {
 
   @Post()
   @ApiBody({ type: PostForCreate })
+  @ApiOkResponse({
+    type: PostForResponse,
+  })
   async createPost(@Body() postForCreate: PostForCreate, @Request() req) {
     return await this.postService.createPost(postForCreate, req?.user);
   }
 
   @Patch()
   @ApiBody({ type: PostForUpdate })
+  @ApiOkResponse({
+    type: PostForResponse,
+  })
   async updatePost(@Body() postRequest: PostForUpdate, @Request() req) {
     const post = new PostForResponse();
     const account = new AccountForToken();
@@ -61,6 +69,11 @@ export class PostController {
 
   @Delete('/:id')
   @ApiParam({ name: 'id', type: String })
+
+  @ApiOkResponse({
+    description: 'delete ok',
+    type: PostForResponse,
+  })
   async deletePost(@Param('id') id: string, @Request() req) {
     const post = new PostForResponse();
     const account = new AccountForToken();
@@ -75,17 +88,17 @@ export class PostController {
     throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
   }
 
-  @Get("/mock-data")
-  async getMockDataNormalPost() {
-    console.log("loading to mock...")
-    return await this.postService.mockDataFaker();
-  }
-
   @Get("/valid-post")
   @ApiBearerAuth('Authorization')
   @Roles(Role.User)
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
-  async getValidPostByUser(@Request() req) {
-    return await this.postService.getValidPostByAccount(req?.user?.id)
+  @ApiOkResponse({
+    type: [PostForFullResponse],
+  })
+  @ApiQuery({
+    type: PaginationAndFilter
+  })
+  async getValidPostByUser(@Request() req, @Query() query: PaginationAndFilter) {
+    return await this.postService.getValidPostByAccount(req?.user?.id, query)
   }
 }

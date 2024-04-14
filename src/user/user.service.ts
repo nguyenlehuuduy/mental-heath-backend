@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserForUpdate } from './dto/UserForUpdate';
 import { UserForResponse } from './dto/UserForResponse';
+import { AdminAccountForPut } from './dto/AdminAccountForPut';
+import { AdminAccountForResponse } from './dto/AdminAccountForResponse';
 
 @Injectable()
 export class UserService {
@@ -20,6 +22,7 @@ export class UserService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
+
   async updateUser(userInfoRequest: UserForUpdate): Promise<UserForResponse> {
     try {
       return await this.prismaService.account.update({
@@ -43,6 +46,33 @@ export class UserService {
           address: true
         }
       });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateAdministratorAccount(accountForUpdateAdminRole: AdminAccountForPut): Promise<AdminAccountForResponse> {
+    try {
+      return this.prismaService.account.update({
+        data: {
+          roles: {
+            connect: [{
+              id: accountForUpdateAdminRole.idRoleAdmin,
+            }]
+          }
+        },
+        where: {
+          id: accountForUpdateAdminRole.idAccount
+        },
+        select: {
+          id: true,
+          fullName: true,
+          roles: true,
+          phone: true,
+          updated_at: true
+        }
+      })
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);

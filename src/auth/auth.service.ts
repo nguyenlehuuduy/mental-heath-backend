@@ -12,6 +12,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AccountForPost } from './dto/AccountForPost';
 import { AccountForFull } from './dto/AccountFull';
 import { TokenService } from 'src/token/token.service';
+import { AccountForToken } from './dto/AccountForToken';
+import { AccountForLoginResponse } from './dto/AccountForLoginResponse';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +22,9 @@ export class AuthService {
     private jwtService: JwtService,
     @Inject(forwardRef(() => TokenService))
     private tokenService: TokenService,
-  ) {}
+  ) { }
 
-  async register(accountForPost: AccountForPost) {
+  async register(accountForPost: AccountForPost): Promise<AccountForFull> {
     try {
       const { email, password } = accountForPost;
       const accountExists = await this.prismaService.account.findFirst({
@@ -36,6 +38,12 @@ export class AuthService {
       accountForPost.password = hashPassword;
       const account = await this.prismaService.account.create({
         data: accountForPost,
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+          roles: true,
+        }
       });
       console.log('step2: done !');
       return account;
@@ -45,9 +53,17 @@ export class AuthService {
     }
   }
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(email: string, password: string): Promise<AccountForFull> {
     const account = await this.prismaService.account.findFirst({
       where: { email },
+      select: {
+        roles: true,
+        password: true,
+        email: true,
+        id: true,
+        fullName: true,
+        refreshTokenJWT: true
+      }
     });
     if (account && account.password) {
       const isMatch = await bcrypt.compare(password, account.password);
@@ -61,12 +77,11 @@ export class AuthService {
     return null;
   }
 
-  async login(account: AccountForFull) {
+  async login(account: AccountForFull): Promise<AccountForLoginResponse> {
     if (!account.refreshTokenJWT) {
       // create a new refreshToken
       const refreshToken =
         await this.tokenService.generateRefreshToken(account);
-      console.log(refreshToken);
       // save in account db
       refreshToken &&
         (await this.prismaService.account.update({
@@ -151,10 +166,16 @@ export class AuthService {
     }
   }
 
-  async findAccountByRT(refreshToken: string): Promise<AccountForFull | null> {
+  async findAccountByRT(refreshToken: string): Promise<AccountForFull> {
     try {
       return await this.prismaService.account.findFirst({
         where: { refreshTokenJWT: refreshToken },
+        select: {
+          fullName: true,
+          email: true,
+          id: true,
+          roles: true,
+        }
       });
     } catch (error) {
       console.log(error);

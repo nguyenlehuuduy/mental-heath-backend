@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -8,7 +9,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/decorator/role.enum';
 import { Roles } from 'src/decorator/roles.decorator';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
@@ -21,6 +22,8 @@ import {
 import { UserForUpdate } from './dto/UserForUpdate';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { UserForResponse } from './dto/UserForResponse';
+import { AdminAccountForPut } from './dto/AdminAccountForPut';
+import { AdminAccountForResponse } from './dto/AdminAccountForResponse';
 
 @ApiTags('user')
 @Controller('user')
@@ -33,8 +36,11 @@ export class UserController {
     private caslAbilityFactory: CaslAbilityFactory,
   ) { }
 
-  @Patch('/updateInfo/:id')
+  @Patch()
   @ApiBody({ type: UserForUpdate })
+  @ApiOkResponse({
+    type: UserForResponse,
+  })
   async updateUser(
     @Body() userInfoRequest: UserForUpdate,
     @Param('id') userId: string,
@@ -58,5 +64,19 @@ export class UserController {
       console.error(error);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @Patch("/update-account-admin")
+  @ApiOkResponse({
+    type: AdminAccountForResponse,
+  })
+  @Roles(Role.Admin)
+  async updateAdministratorAccount(@Body() accountForUpdateAdminRole: AdminAccountForPut) {
+    return await this.userService.updateAdministratorAccount(accountForUpdateAdminRole)
+  }
+
+  @Get("/suggestFollow")
+  async suggestFollowForAccount() {
+
   }
 }

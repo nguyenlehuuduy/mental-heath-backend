@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Account } from '@prisma/client';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { PaginationAndFilter } from 'src/common/schema/pagination';
+import { UserForResponse } from 'src/user/dto/UserForResponse';
 
 export class PostForResponse {
   @ApiProperty()
@@ -19,13 +21,15 @@ export class PostForResponse {
   accountId: string;
 
   @ApiProperty()
-  account?: Account;
+  @IsNotEmpty()
+  @IsString()
+  account: UserForResponse;
 
-  @ApiProperty()
+  @ApiProperty({ type: Date })
   @IsNotEmpty()
   created_at: Date | string;
 
-  @ApiProperty()
+  @ApiProperty({ type: Date })
   @IsNotEmpty()
   updated_at: Date | string;
 
@@ -36,4 +40,15 @@ export class PostForResponse {
   @ApiProperty()
   totalShare: number;
   //TODO: react, comment,... later
+}
+
+export class PostForFullResponse {
+  @ApiProperty({
+    type: [PostForResponse]
+  })
+  data: Array<PostForResponse>;
+  @ApiProperty({
+    required: false
+  })
+  pagination: PaginationAndFilter
 }
