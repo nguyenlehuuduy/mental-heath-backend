@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HotContentForResponse } from './dto/HotContentForResponse';
 import { HotContentForPost } from './dto/HotContentForPost';
+import { HotContentForUpdate } from './dto/HotContentForUpdate';
 
 
 @Injectable()
@@ -9,7 +10,7 @@ export class HotContentService {
   constructor(private prismaService: PrismaService) { }
   async createHotContent(hotContentForPost: HotContentForPost): Promise<HotContentForResponse> {
     try {
-      return await this.prismaService.HotContent.create({
+      return await this.prismaService.hotContent.create({
         data: {
           title: hotContentForPost.title,
           thumbnailFileName: hotContentForPost.thumbnailFileName,
@@ -19,7 +20,7 @@ export class HotContentService {
           id: true,
           title: true,
           thumbnailFileName: true,
-          url : true,
+          url: true,
           created_at: true,
           updated_at: true,
         }
@@ -32,7 +33,7 @@ export class HotContentService {
 
   async getDetailHotContent(id: string): Promise<HotContentForResponse> {
     try {
-      return await this.prismaService.HotContent.findUnique({
+      return await this.prismaService.hotContent.findUnique({
         where: { id: id },
       });
     } catch (error) {
@@ -41,10 +42,10 @@ export class HotContentService {
     }
   }
 
-  async updateHotContent(hotContentForUpdate: HotContentForResponse): Promise<HotContentForResponse> {
+  async updateHotContent(id: string, hotContentForUpdate: HotContentForUpdate): Promise<HotContentForResponse> {
     try {
-      return await this.prismaService.HotContent.update({
-        where: { id: hotContentForUpdate.id },
+      return await this.prismaService.hotContent.update({
+        where: { id },
         data: {
           title: hotContentForUpdate.title,
           thumbnailFileName: hotContentForUpdate.thumbnailFileName,
@@ -54,7 +55,7 @@ export class HotContentService {
           id: true,
           title: true,
           thumbnailFileName: true,
-          url : true,
+          url: true,
           created_at: true,
           updated_at: true,
         }
@@ -67,7 +68,7 @@ export class HotContentService {
 
   async deleteHotContent(id: string): Promise<HotContentForResponse> {
     try {
-      return await this.prismaService.HotContent.delete({
+      return await this.prismaService.hotContent.delete({
         where: { id: id },
       });
     } catch (error) {
@@ -76,16 +77,16 @@ export class HotContentService {
     }
   }
 
-  async getHotContents(): Promise<HotContentForResponse> {
+  async getHotContents(): Promise<Array<HotContentForResponse>> {
     try {
-      return await this.prismaService.HotContent.findMany({
+      return await this.prismaService.hotContent.findMany({
         select: {
           id: true,
           title: true,
           thumbnailFileName: true,
-          url : true,
+          url: true,
         }
-      }); 
+      });
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
