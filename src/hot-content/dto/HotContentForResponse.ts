@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class HotContentForGet {
+export class HotContentForResponse {
   @ApiProperty({
     required: false
   })
