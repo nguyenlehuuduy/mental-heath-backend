@@ -10,6 +10,7 @@ import { RoleModule } from './role/role.module';
 import { FeatureModule } from './feature/feature.module';
 import { HotContentModule } from './hot-content/hot-content.module';
 import { TabMenuModule } from './tab-menu/tab-menu.module';
+import { RoomMessageModule } from './room-message/room-message.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TabMenuModule } from './tab-menu/tab-menu.module';
     FeatureModule,
     HotContentModule,
     TabMenuModule,
+    RoomMessageModule,
   ],
   controllers: [],
   providers: [],

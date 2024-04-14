@@ -23,5 +23,5 @@ export class AccountForToken {
   id: string;
 
   @IsNotEmpty()
-  roles: Array<Role>;
+  roles?: Array<Role>;
 }
