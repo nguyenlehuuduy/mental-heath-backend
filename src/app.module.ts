@@ -11,6 +11,8 @@ import { FeatureModule } from './feature/feature.module';
 import { HotContentModule } from './hot-content/hot-content.module';
 import { TabMenuModule } from './tab-menu/tab-menu.module';
 import { RoomMessageModule } from './room-message/room-message.module';
+import { LikeModule } from './like/like.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -31,8 +33,10 @@ import { RoomMessageModule } from './room-message/room-message.module';
     HotContentModule,
     TabMenuModule,
     RoomMessageModule,
+    LikeModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

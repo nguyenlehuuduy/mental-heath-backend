@@ -233,8 +233,10 @@ model TabMenu {
 }
 
 model HotContent {
-  id                String @id @default(uuid())
+  id                String   @id @default(uuid())
   title             String
   thumbnailFileName String
   url               String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 }
