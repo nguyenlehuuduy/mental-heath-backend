@@ -24,8 +24,8 @@ model Account {
   birth                 DateTime?
   address               String?
   posts                 Post[]
-  followers             Follower[]      @relation("Following")
-  following             Follower[]      @relation("Follower")
+  followers             Follower[]      @relation("Followers")
+  followings            Follower[]      @relation("Followings")
   postShares            PostShare[]
   comments              Comment[]
   reactions             Reaction[]
@@ -102,10 +102,9 @@ model RequestFollow {
 
 model Follower {
   id          String   @id @default(uuid())
-  accountId   String
-  follower    Account  @relation("Following", fields: [followerId], references: [id])
+  follower    Account  @relation("Followers", fields: [followerId], references: [id])
   followerId  String
-  following   Account  @relation("Follower", fields: [followingId], references: [id])
+  following   Account  @relation("Followings", fields: [followingId], references: [id])
   followingId String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt

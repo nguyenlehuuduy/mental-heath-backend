@@ -115,20 +115,20 @@ export class PostService {
     const sevenDaysAgo = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
     try {
       const account = await this.prismaService.account.findUnique({
-        where: { id: idAccount }
+        where: { id: idAccount },
+        select: {
+          followers: {
+            orderBy: {
+              piority: 'desc',
+            },
+            take: 10
+          },
+          followings: true,
+        }
       })
-      const getFollowerAccount = await this.prismaService.follower.findMany({
-        where: { accountId: account.id },
-      })
+      const getFollowerAccount = account.followers;
       const key_num = this.getRandomIntInclusive(1, 10);
       if (key_num >= 1 && key_num <= 5) {
-        const getFollowerAccount = await this.prismaService.follower.findMany({
-          where: { accountId: account.id },
-          orderBy: {
-            piority: 'desc'
-          },
-          take: 10
-        })
         let arr_post = []
         for (let i = 0; i < getFollowerAccount.length; i++) {
           const postByAccount = await this.prismaService.post.findMany({
@@ -140,17 +140,17 @@ export class PostService {
               },
               reactions: {
                 none: {
-                  accountId: getFollowerAccount[i].accountId
+                  accountId: getFollowerAccount[i].id
                 }
               },
               comments: {
                 none: {
-                  accountId: getFollowerAccount[i].accountId
+                  accountId: getFollowerAccount[i].id
                 }
               },
               postShares: {
                 none: {
-                  accountId: getFollowerAccount[i].accountId
+                  accountId: getFollowerAccount[i].id
                 }
               }
             },
