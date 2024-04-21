@@ -9,7 +9,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Role } from 'src/decorator/role.enum';
 import { Roles } from 'src/decorator/roles.decorator';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
@@ -34,7 +39,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) { }
+  ) {}
 
   @Patch()
   @ApiBody({ type: UserForUpdate })
@@ -44,7 +49,7 @@ export class UserController {
   async updateUser(
     @Body() userInfoRequest: UserForUpdate,
     @Param('id') userId: string,
-    @Request() req
+    @Request() req,
   ) {
     try {
       const account = new AccountForToken();
@@ -66,17 +71,27 @@ export class UserController {
     }
   }
 
-  @Patch("/update-account-admin")
+  @Patch('/update-account-admin')
   @ApiOkResponse({
     type: AdminAccountForResponse,
   })
   @Roles(Role.Admin)
-  async updateAdministratorAccount(@Body() accountForUpdateAdminRole: AdminAccountForPut) {
-    return await this.userService.updateAdministratorAccount(accountForUpdateAdminRole)
+  async updateAdministratorAccount(
+    @Body() accountForUpdateAdminRole: AdminAccountForPut,
+  ) {
+    return await this.userService.updateAdministratorAccount(
+      accountForUpdateAdminRole,
+    );
   }
 
-  @Get("/suggestFollow")
-  async suggestFollowForAccount() {
-
+  @Get('/suggestFollow')
+  async suggestFollowForAccount(@Request() req) {
+    try {
+      const userId = req?.user?.id;
+      return await this.userService.getSuggestedFollowAccounts(userId);
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
