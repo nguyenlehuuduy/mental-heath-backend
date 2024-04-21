@@ -13,6 +13,7 @@ import { TabMenuModule } from './tab-menu/tab-menu.module';
 import { RoomMessageModule } from './room-message/room-message.module';
 import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CommentModule } from './comment/comment.module';
     RoomMessageModule,
     LikeModule,
     CommentModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],
