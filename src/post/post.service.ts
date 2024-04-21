@@ -6,6 +6,7 @@ import { PostForResponse } from './dto/PostForResponse';
 import { PostForUpdate } from './dto/PostForUpdate';
 import { faker } from '@faker-js/faker';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
+import { PostForQuery } from './dto/PostForQuery';
 
 @Injectable()
 export class PostService {
@@ -213,6 +214,61 @@ export class PostService {
     } catch (error) {
       console.error(error);
       throw new BadRequestException(error);
+    }
+  }
+
+  async getAllPost(query: PostForQuery): Promise<Array<PostForResponse>> {
+    const take = Number(query.limit ?? 5)
+    const skip = take * Number(query.pageNo ? query.pageNo - 1 : 0);
+    try {
+      return this.prismaService.post.findMany({
+        select: {
+          id: true,
+          contentText: true,
+          accountId: true,
+          account: {
+            select: {
+              id: true,
+              email: true,
+              fullName: true,
+              nickName: true,
+              birth: true,
+              address: true,
+              aboutMe: true,
+              phone: true
+            }
+          },
+          created_at: true,
+          updated_at: true,
+          totalComment: true,
+          totalReaction: true,
+          totalShare: true
+        },
+        where: {
+          contentText: {
+            contains: query.contentTextKey
+          },
+          AND: {
+            account: {
+              fullName: { contains: query.nameAccountKey },
+              email: { contains: query.emailAccountKey },
+              created_at: {
+                lte: query.createdDateTo,
+                gte: query.createdDateFrom,
+              }
+            },
+          }
+        },
+        orderBy:
+        {
+          [query.sortBy]: query.orderBy
+        },
+        skip: skip,
+        take: take,
+      })
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 

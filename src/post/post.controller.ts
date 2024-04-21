@@ -27,6 +27,7 @@ import { PostForCreate } from './dto/PostForCreate';
 import { PostForUpdate } from './dto/PostForUpdate';
 import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
+import { PostForQuery } from './dto/PostForQuery';
 
 @ApiTags('post')
 @Controller('post')
@@ -100,5 +101,11 @@ export class PostController {
   })
   async getValidPostByUser(@Request() req, @Query() query: PaginationAndFilter) {
     return await this.postService.getValidPostByAccount(req?.user?.id, query)
+  }
+
+  @Get("/get-all-post")
+  @Roles(Role.Admin)
+  async getAllPost(@Query() query: PostForQuery) {
+    return this.postService.getAllPost(query);
   }
 }
