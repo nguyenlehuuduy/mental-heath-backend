@@ -1,23 +1,33 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class FeatureForGet {
   @ApiProperty({
-    required: false
+    required: false,
   })
-  id?: string;
+  id: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
-  name?: string;
+  name: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
-  thumbnailFileName?: string;
+  thumbnailFileName: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
-  url?: string;
+  url: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  created_at?: Date
+
+  @ApiProperty({
+    required: false,
+  })
+  updated_at?: Date
 }
