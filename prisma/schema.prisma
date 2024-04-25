@@ -24,8 +24,8 @@ model Account {
   birth                 DateTime?
   address               String?
   posts                 Post[]
-  followers             Follower[]      @relation("Followers")
-  followings            Follower[]      @relation("Followings")
+  followers             FollowShip[]    @relation("Followings")
+  followings            FollowShip[]    @relation("Followers")
   postShares            PostShare[]
   comments              Comment[]
   reactions             Reaction[]
@@ -100,7 +100,7 @@ model RequestFollow {
   reciver   Account @relation("AcceptOrCancelRequest", fields: [reciverId], references: [id])
 }
 
-model Follower {
+model FollowShip {
   id          String   @id @default(uuid())
   follower    Account  @relation("Followers", fields: [followerId], references: [id])
   followerId  String

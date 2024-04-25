@@ -39,7 +39,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) {}
+  ) { }
 
   @Patch()
   @ApiBody({ type: UserForUpdate })
@@ -84,14 +84,9 @@ export class UserController {
     );
   }
 
-  @Get('/suggestFollow')
+  @Get('/suggest-follow')
   async suggestFollowForAccount(@Request() req) {
-    try {
-      const userId = req?.user?.id;
-      return await this.userService.getSuggestedFollowAccounts(userId);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.userService.getSuggestedFollowAccounts(req?.user?.id);
+
   }
 }
