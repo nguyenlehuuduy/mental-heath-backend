@@ -1,50 +1,56 @@
 
-import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/decorator/role.enum';
 import { HotContentForPost } from './dto/HotContentForPost';
-import { HotContentForGet } from './dto/HotContentForGet';
+import { HotContentForResponse } from './dto/HotContentForResponse';
 import { HotContentForUpdate } from './dto/HotContentForUpdate';
+import { HotContentService } from './hot-content.service';
+import { AuthenticationGuard } from 'src/guard/authentication.guard';
+import { AuthorizationGuard } from 'src/guard/authorization.guard';
 
 @ApiTags('hot-content')
 @Controller('hot-content')
 @Roles(Role.Admin)
-
+@UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class HotContentController {
+  constructor(
+    private readonly hotContentService: HotContentService,
+  ) { }
   @Post()
   @ApiBody({ type: HotContentForPost })
   @ApiOkResponse({
-    type: HotContentForGet,
+    type: HotContentForResponse,
   })
-  async createNewFeature() {
-
+  async createNewHotContent(@Body() hotContentForPost: HotContentForPost) {
+    return await this.hotContentService.createHotContent(hotContentForPost);
   }
 
   @Patch(":id")
   @ApiBody({ type: HotContentForUpdate })
   @ApiQuery({ name: "id", description: "id of hot content" })
   @ApiOkResponse({
-    type: HotContentForGet,
+    type: HotContentForResponse,
   })
-  async updateFeature(@Param("id") id: string) {
-
+  async updateHotContent(@Param("id") id: string, @Body() hotContentRequest: HotContentForUpdate) {
+    return await this.hotContentService.updateHotContent(id, hotContentRequest);
   }
 
   @Get()
   @ApiOkResponse({
-    type: [HotContentForGet],
+    type: [HotContentForResponse],
   })
-  async getAllFeature() {
-
+  async getAllHotContent(@Request() req) {
+    return await this.hotContentService.getHotContents();
   }
 
   @Delete(":id")
-  @ApiQuery({ name: "id", description: "id of feature" })
+  @ApiQuery({ name: "id", description: "id of HotContent" })
   @ApiOkResponse({
-    type: HotContentForGet,
+    type: HotContentForResponse,
   })
-  async deleteFeature(@Param("id") id: string) {
-
+  async deleteHotContent(@Param("id") id: string) {
+    return await this.hotContentService.deleteHotContent(id);
   }
 }

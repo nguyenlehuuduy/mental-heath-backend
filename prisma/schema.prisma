@@ -24,8 +24,8 @@ model Account {
   birth                 DateTime?
   address               String?
   posts                 Post[]
-  followers             Follower[]      @relation("Following")
-  following             Follower[]      @relation("Follower")
+  followers             FollowShip[]    @relation("Followings")
+  followings            FollowShip[]    @relation("Followers")
   postShares            PostShare[]
   comments              Comment[]
   reactions             Reaction[]
@@ -100,12 +100,11 @@ model RequestFollow {
   reciver   Account @relation("AcceptOrCancelRequest", fields: [reciverId], references: [id])
 }
 
-model Follower {
+model FollowShip {
   id          String   @id @default(uuid())
-  accountId   String
-  follower    Account  @relation("Following", fields: [followerId], references: [id])
+  follower    Account  @relation("Followers", fields: [followerId], references: [id])
   followerId  String
-  following   Account  @relation("Follower", fields: [followingId], references: [id])
+  following   Account  @relation("Followings", fields: [followingId], references: [id])
   followingId String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -233,8 +232,10 @@ model TabMenu {
 }
 
 model HotContent {
-  id                String @id @default(uuid())
+  id                String   @id @default(uuid())
   title             String
   thumbnailFileName String
   url               String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 }

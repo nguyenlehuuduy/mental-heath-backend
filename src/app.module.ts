@@ -10,6 +10,10 @@ import { RoleModule } from './role/role.module';
 import { FeatureModule } from './feature/feature.module';
 import { HotContentModule } from './hot-content/hot-content.module';
 import { TabMenuModule } from './tab-menu/tab-menu.module';
+import { RoomMessageModule } from './room-message/room-message.module';
+import { LikeModule } from './like/like.module';
+import { CommentModule } from './comment/comment.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -29,8 +33,12 @@ import { TabMenuModule } from './tab-menu/tab-menu.module';
     FeatureModule,
     HotContentModule,
     TabMenuModule,
+    RoomMessageModule,
+    LikeModule,
+    CommentModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

@@ -7,7 +7,9 @@ import {
 } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import { CommentForResponse } from 'src/comment/dto/CommentForResponse';
 import { Role } from 'src/decorator/role.enum';
+import { HotContentForResponse } from 'src/hot-content/dto/HotContentForResponse';
 import { PostForResponse } from 'src/post/dto/PostForResponse';
 import { UserForResponse } from 'src/user/dto/UserForResponse';
 
@@ -20,7 +22,7 @@ export enum Action {
 }
 export type Subjects =
   | InferSubjects<
-    typeof AccountForToken | typeof PostForResponse | typeof UserForResponse
+    typeof AccountForToken | typeof PostForResponse | typeof UserForResponse | typeof HotContentForResponse | typeof CommentForResponse
   >
   | 'all';
 export type AppAbility = Ability<[Action, Subjects]>;
@@ -48,6 +50,19 @@ export class CaslAbilityFactory {
       can(Action.Read, UserForResponse);
       can(Action.Update, UserForResponse, {
         id: account.id,
+      });
+      can(Action.Update, HotContentForResponse, {
+        id: account.id,
+      });
+      can(Action.Delete, HotContentForResponse, {
+        id: account.id,
+      });
+
+      can(Action.Update, CommentForResponse, {
+        accountId: account.id,
+      });
+      can(Action.Delete, CommentForResponse, {
+        accountId: account.id,
       });
     }
     return build({

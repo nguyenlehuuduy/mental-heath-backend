@@ -6,6 +6,7 @@ import { PostForResponse } from './dto/PostForResponse';
 import { PostForUpdate } from './dto/PostForUpdate';
 import { faker } from '@faker-js/faker';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
+import { PostForQuery } from './dto/PostForQuery';
 
 @Injectable()
 export class PostService {
@@ -115,20 +116,15 @@ export class PostService {
     const sevenDaysAgo = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
     try {
       const account = await this.prismaService.account.findUnique({
-        where: { id: idAccount }
+        where: { id: idAccount },
+        select: {
+          followers: true,
+          followings: true
+        }
       })
-      const getFollowerAccount = await this.prismaService.follower.findMany({
-        where: { accountId: account.id },
-      })
+      const getFollowerAccount = account.followers;
       const key_num = this.getRandomIntInclusive(1, 10);
       if (key_num >= 1 && key_num <= 5) {
-        const getFollowerAccount = await this.prismaService.follower.findMany({
-          where: { accountId: account.id },
-          orderBy: {
-            piority: 'desc'
-          },
-          take: 10
-        })
         let arr_post = []
         for (let i = 0; i < getFollowerAccount.length; i++) {
           const postByAccount = await this.prismaService.post.findMany({
@@ -140,17 +136,17 @@ export class PostService {
               },
               reactions: {
                 none: {
-                  accountId: getFollowerAccount[i].accountId
+                  accountId: getFollowerAccount[i].followingId
                 }
               },
               comments: {
                 none: {
-                  accountId: getFollowerAccount[i].accountId
+                  accountId: getFollowerAccount[i].followingId
                 }
               },
               postShares: {
                 none: {
-                  accountId: getFollowerAccount[i].accountId
+                  accountId: getFollowerAccount[i].followingId
                 }
               }
             },
@@ -218,6 +214,61 @@ export class PostService {
     } catch (error) {
       console.error(error);
       throw new BadRequestException(error);
+    }
+  }
+
+  async getAllPost(query: PostForQuery): Promise<Array<PostForResponse>> {
+    const take = Number(query.limit ?? 5)
+    const skip = take * Number(query.pageNo ? query.pageNo - 1 : 0);
+    try {
+      return this.prismaService.post.findMany({
+        select: {
+          id: true,
+          contentText: true,
+          accountId: true,
+          account: {
+            select: {
+              id: true,
+              email: true,
+              fullName: true,
+              nickName: true,
+              birth: true,
+              address: true,
+              aboutMe: true,
+              phone: true
+            }
+          },
+          created_at: true,
+          updated_at: true,
+          totalComment: true,
+          totalReaction: true,
+          totalShare: true
+        },
+        where: {
+          contentText: {
+            contains: query.contentTextKey
+          },
+          AND: {
+            account: {
+              fullName: { contains: query.nameAccountKey },
+              email: { contains: query.emailAccountKey },
+              created_at: {
+                lte: query.createdDateTo,
+                gte: query.createdDateFrom,
+              }
+            },
+          }
+        },
+        orderBy:
+        {
+          [query.sortBy]: query.orderBy
+        },
+        skip: skip,
+        take: take,
+      })
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 

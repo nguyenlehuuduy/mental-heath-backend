@@ -20,4 +20,14 @@ export class TabMenuForGet {
     required: false
   })
   url?: string;
+
+  @ApiProperty({
+    required: false
+  })
+  created_at?: Date;
+
+  @ApiProperty({
+    required: false
+  })
+  updated_at?: Date;
 }
