@@ -13,8 +13,8 @@ import { TabMenuModule } from './tab-menu/tab-menu.module';
 import { RoomMessageModule } from './room-message/room-message.module';
 import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
+import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
-//import { HabitTrackerModule } from './habit-tracker/habit-tracker.module';
 
 @Module({
   imports: [
@@ -37,8 +37,8 @@ import { FollowModule } from './follow/follow.module';
     RoomMessageModule,
     LikeModule,
     CommentModule,
+    FileModule,
     FollowModule,
-    //HabitTrackerModule,
   ],
   controllers: [],
   providers: [],

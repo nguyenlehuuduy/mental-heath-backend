@@ -1,18 +1,18 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class FeatureForUpdate {
   @ApiProperty({
-    required: false
+    required: false,
   })
-  name?: string;
+  name: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
-  thumbnailFileName?: string;
+  thumbnailFileName: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   url?: string;
 }
