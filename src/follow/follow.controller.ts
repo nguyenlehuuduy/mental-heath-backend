@@ -1,59 +1,38 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { FollowService } from './follow.service';
-import { ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/decorator/roles.decorator';
-import { Role } from 'src/decorator/role.enum';
-import { AuthenticationGuard } from 'src/guard/authentication.guard';
-import { AuthorizationGuard } from 'src/guard/authorization.guard';
-import { FollowForGet } from './dto/FollowForGet';
-import { FollowForCreate } from './dto/FollowForCreate';
+import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
+import { Role } from "src/decorator/role.enum";
+import { Roles } from "src/decorator/roles.decorator";
+import { AuthenticationGuard } from "src/guard/authentication.guard";
+import { AuthorizationGuard } from "src/guard/authorization.guard";
+import { FollowForCreate } from "./dto/FollowForCreate";
+import { FollowService } from "./follow.service";
 
-
-@Controller('follow')
-@ApiTags('follows')
-@Roles(Role.User)
+@Controller("follow")
+@ApiTags("follows")
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
-
+@Roles(Role.User)
 export class FollowController {
-    constructor(
-      private readonly followService: FollowService) {}
-
-  @Get("/request-follow-list")
-  async requestFollowList(@Request() req): Promise<FollowForGet> {
-    return await this.followService.requestFollows(req?.user?.id);
-  }
+  constructor(
+    private readonly followService: FollowService,
+  ) {}
 
   @Post()
-  @UseGuards(AuthenticationGuard, AuthorizationGuard)
-  async follow(@Body() data ): Promise<FollowForCreate> {
-    const senderId = data.senderId;
-    const reciverId = data.reciverId;
-
-    return await this.followService.createRequestFollow(senderId, reciverId);
+  async follow(@Body() data: FollowForCreate): Promise<FollowForCreate> {
+    return await this.followService.createRequestFollow(data);
   }
 
-  @Delete(':id')
-  async unAcceptRequestFollow(@Param('id') id: string) {
+  @Delete(":id")
+  async unAcceptRequestFollow(@Param("id") id: string) {
     return await this.followService.unAcceptRequestFollow(id);
   }
 
-  @Post('accept')
-  async acceptRequestFollow(@Body() data): Promise<FollowForCreate> {
-    const senderId = data.senderId;
-    const reciverId = data.reciverId;
-    const id = data.id;
-    
-    return await this.followService.acceptRequestFollow(senderId, reciverId, id);
-  }
-
-  @Get("/follow-list")
-  async followList(@Request() req): Promise<FollowForGet> {
-    return await this.followService.follows(req?.user?.id);
+  @Post("accept")
+  async acceptRequestFollow(@Body() data: FollowForCreate, idRequestFollow: string) {
+    return await this.followService.acceptRequestFollow(data, idRequestFollow);
   }
 
   @Delete("/unfollow/:id")
-  async unFollow(@Param('id') id: string) {
+  async unFollow(@Param("id") id: string) {
     return await this.followService.unFollow(id);
   }
-
 }

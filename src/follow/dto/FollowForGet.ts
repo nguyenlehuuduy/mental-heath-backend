@@ -1,21 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UserForResponse } from "src/user/dto/UserForResponse";
 
 export class FollowForGet {
-	@ApiProperty()
-	id: string;
-	@ApiProperty()
-	fullName: string;
-	@ApiProperty()
-	followerId?: string;
-	@ApiProperty()
-	followingId?: string;
-	@ApiProperty()
-	senderId?: string;
-	@ApiProperty()
-	reciverId?: string;
-	@ApiProperty()
-	created_at?: Date;
-	@ApiProperty()
-	updated_at?: Date;
-	
+  @ApiProperty()
+  id: string;
+  @ApiProperty()
+  senderId: string;
+  @ApiProperty()
+  sender: UserForResponse;
+  @ApiProperty()
+  reciver: UserForResponse;
+  @ApiProperty()
+  reciverId: string;
+  @ApiProperty()
+  updated_at?: Date;
+  @ApiProperty()
+  created_at?: Date;
 }

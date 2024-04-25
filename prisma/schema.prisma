@@ -93,11 +93,13 @@ model Role {
 }
 
 model RequestFollow {
-  id        String  @id @default(uuid())
-  senderId  String
-  sender    Account @relation("RequestFollow", fields: [senderId], references: [id])
-  reciverId String
-  reciver   Account @relation("AcceptOrCancelRequest", fields: [reciverId], references: [id])
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     Account  @relation("RequestFollow", fields: [senderId], references: [id])
+  reciverId  String
+  reciver    Account  @relation("AcceptOrCancelRequest", fields: [reciverId], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model FollowShip {
