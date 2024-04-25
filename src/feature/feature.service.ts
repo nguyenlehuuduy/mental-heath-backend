@@ -6,7 +6,7 @@ import { FeatureForUpdate } from './dto/FeatureForUpdate';
 
 @Injectable()
 export class FeatureService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async getAllFeaturesSevice(): Promise<FeatureForGet[]> {
     try {
@@ -16,6 +16,8 @@ export class FeatureService {
           name: true,
           thumbnailFileName: true,
           url: true,
+          created_at: true,
+          updated_at: true
         },
       });
     } catch (error) {
@@ -26,7 +28,7 @@ export class FeatureService {
 
   async createNewFeatureService(
     featureForPost: FeatureForPost,
-  ): Promise<FeatureForPost> {
+  ): Promise<FeatureForGet> {
     try {
       return await this.prismaService.feature.create({
         data: {
@@ -34,6 +36,14 @@ export class FeatureService {
           thumbnailFileName: featureForPost.thumbnailFileName,
           url: featureForPost.url,
         },
+        select: {
+          name: true,
+          id: true,
+          thumbnailFileName: true,
+          url: true,
+          created_at: true,
+          updated_at: true
+        }
       });
     } catch (error) {
       console.error(error);
@@ -44,7 +54,7 @@ export class FeatureService {
   async updateFeatureService(
     id: string,
     featureForUpdate: FeatureForUpdate,
-  ): Promise<FeatureForUpdate> {
+  ): Promise<FeatureForGet> {
     try {
       return await this.prismaService.feature.update({
         where: {
@@ -55,6 +65,14 @@ export class FeatureService {
           thumbnailFileName: featureForUpdate.thumbnailFileName,
           url: featureForUpdate.url,
         },
+        select: {
+          id: true,
+          name: true,
+          thumbnailFileName: true,
+          url: true,
+          created_at: true,
+          updated_at: true
+        }
       });
     } catch (error) {
       console.error(error);

@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FeatureForPost } from './dto/FeatureForPost';
@@ -16,12 +17,15 @@ import { FeatureForUpdate } from './dto/FeatureForUpdate';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/decorator/role.enum';
 import { FeatureService } from './feature.service';
+import { AuthenticationGuard } from 'src/guard/authentication.guard';
+import { AuthorizationGuard } from 'src/guard/authorization.guard';
 
 @ApiTags('feature')
 @Controller('feature')
-@Roles(Role.Admin)
+@UseGuards(AuthenticationGuard, AuthorizationGuard)
+@Roles(Role.User)
 export class FeatureController {
-  constructor(private readonly featureService: FeatureService) {}
+  constructor(private readonly featureService: FeatureService) { }
   @Post()
   @ApiBody({ type: FeatureForPost })
   @ApiOkResponse({

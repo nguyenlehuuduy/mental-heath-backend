@@ -218,10 +218,12 @@ model TypeNotification {
 }
 
 model Feature {
-  id                String @id @default(uuid())
+  id                String   @id @default(uuid())
   name              String
   thumbnailFileName String
   url               String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 }
 
 model TabMenu {

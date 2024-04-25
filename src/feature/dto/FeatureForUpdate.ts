@@ -4,12 +4,12 @@ export class FeatureForUpdate {
   @ApiProperty({
     required: false,
   })
-  name?: string;
+  name: string;
 
   @ApiProperty({
     required: false,
   })
-  thumbnailFileName?: string;
+  thumbnailFileName: string;
 
   @ApiProperty({
     required: false,

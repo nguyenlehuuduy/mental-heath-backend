@@ -4,20 +4,30 @@ export class FeatureForGet {
   @ApiProperty({
     required: false,
   })
-  id?: string;
+  id: string;
 
   @ApiProperty({
     required: false,
   })
-  name?: string;
+  name: string;
 
   @ApiProperty({
     required: false,
   })
-  thumbnailFileName?: string;
+  thumbnailFileName: string;
 
   @ApiProperty({
     required: false,
   })
-  url?: string;
+  url: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  created_at?: Date
+
+  @ApiProperty({
+    required: false,
+  })
+  updated_at?: Date
 }
