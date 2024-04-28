@@ -26,8 +26,8 @@ export class FollowController {
     return await this.followService.unAcceptRequestFollow(id);
   }
 
-  @Post("accept")
-  async acceptRequestFollow(@Body() data: FollowForCreate, idRequestFollow: string) {
+  @Post("accept/:id")
+  async acceptRequestFollow(@Body() data: FollowForCreate, @Param("id") idRequestFollow: string) {
     return await this.followService.acceptRequestFollow(data, idRequestFollow);
   }
 
