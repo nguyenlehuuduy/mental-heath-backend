@@ -23,6 +23,24 @@ export class UserController {
     private caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
+  @Patch("/update-account-admin")
+  @ApiOkResponse({
+    type: AdminAccountForResponse,
+  })
+  @Roles(Role.Admin)
+  async updateAdministratorAccount(
+    @Body() accountForUpdateAdminRole: AdminAccountForPut,
+  ) {
+    return await this.userService.updateAdministratorAccount(
+      accountForUpdateAdminRole,
+    );
+  }
+
+  @Get("/suggest-follow")
+  async suggestFollowForAccount(@Request() req) {
+    return await this.userService.getSuggestedFollowAccounts(req?.user?.id);
+  }
+
   @Patch(":id")
   @ApiBody({ type: UserForUpdate })
   @ApiOkResponse({
@@ -51,23 +69,5 @@ export class UserController {
       console.error(error);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-  }
-
-  @Patch("/update-account-admin")
-  @ApiOkResponse({
-    type: AdminAccountForResponse,
-  })
-  @Roles(Role.Admin)
-  async updateAdministratorAccount(
-    @Body() accountForUpdateAdminRole: AdminAccountForPut,
-  ) {
-    return await this.userService.updateAdministratorAccount(
-      accountForUpdateAdminRole,
-    );
-  }
-
-  @Get("/suggest-follow")
-  async suggestFollowForAccount(@Request() req) {
-    return await this.userService.getSuggestedFollowAccounts(req?.user?.id);
   }
 }
