@@ -14,6 +14,7 @@ import { RoomMessageModule } from './room-message/room-message.module';
 import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
+import { FollowModule } from './follow/follow.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { FileModule } from './file/file.module';
     LikeModule,
     CommentModule,
     FileModule,
+    FollowModule,
   ],
   controllers: [],
   providers: [],
