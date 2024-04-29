@@ -37,6 +37,9 @@ export class UserController {
   }
 
   @Get("/suggest-follow")
+  @ApiOkResponse({
+    type: [UserForResponse],
+  })
   async suggestFollowForAccount(@Request() req) {
     return await this.userService.getSuggestedFollowAccounts(req?.user?.id);
   }

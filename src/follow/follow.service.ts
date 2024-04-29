@@ -4,6 +4,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { UserForResponse } from "src/user/dto/UserForResponse";
 import { FollowForCreate } from "./dto/FollowForCreate";
 import { FollowForGet } from "./dto/FollowForGet";
+import { RequestFollowForResponse } from "./dto/RequestFollowForResponse";
 
 @Injectable()
 export class FollowService {
@@ -174,11 +175,12 @@ export class FollowService {
     }
   }
 
-  async getAllRequestFollowers(id: string): Promise<Array<UserForResponse>> {
+  async getAllRequestFollowers(id: string): Promise<Array<RequestFollowForResponse>> {
     try {
-      const result = await this.prismaService.requestFollow.findMany({
+      return await this.prismaService.requestFollow.findMany({
         where: { reciverId: id },
         select: {
+          id: true,
           sender: {
             select: {
               id: true,
@@ -190,9 +192,10 @@ export class FollowService {
               address: true,
             },
           },
+          created_at: true,
+          updated_at: true,
         },
       });
-      return result.map(item => item.sender);
     } catch (error) {
       throw new HttpException("Not found", HttpStatus.NOT_FOUND);
     }

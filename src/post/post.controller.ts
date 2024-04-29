@@ -11,34 +11,31 @@ import {
   Query,
   Request,
   UseGuards,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { PostService } from './post.service';
-import { Roles } from 'src/decorator/roles.decorator';
-import { Role } from 'src/decorator/role.enum';
-import { AuthenticationGuard } from 'src/guard/authentication.guard';
-import { AuthorizationGuard } from 'src/guard/authorization.guard';
-import {
-  Action,
-  CaslAbilityFactory,
-} from 'src/casl/casl-ability.factory/casl-ability.factory';
-import { AccountForToken } from 'src/auth/dto/AccountForToken';
-import { PostForCreate } from './dto/PostForCreate';
-import { PostForUpdate } from './dto/PostForUpdate';
-import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
-import { PaginationAndFilter } from 'src/common/schema/pagination';
-import { PostForQuery } from './dto/PostForQuery';
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { AccountForToken } from "src/auth/dto/AccountForToken";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory/casl-ability.factory";
+import { PaginationAndFilter } from "src/common/schema/pagination";
+import { Role } from "src/decorator/role.enum";
+import { Roles } from "src/decorator/roles.decorator";
+import { AuthenticationGuard } from "src/guard/authentication.guard";
+import { AuthorizationGuard } from "src/guard/authorization.guard";
+import { PostForCreate } from "./dto/PostForCreate";
+import { PostForQuery } from "./dto/PostForQuery";
+import { PostForFullResponse, PostForResponse } from "./dto/PostForResponse";
+import { PostForUpdate } from "./dto/PostForUpdate";
+import { PostService } from "./post.service";
 
-@ApiTags('post')
-@Controller('post')
-@ApiBearerAuth('Authorization')
+@ApiTags("post")
+@Controller("post")
+@ApiBearerAuth("Authorization")
 @Roles(Role.User)
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class PostController {
   constructor(
     private readonly postService: PostService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) { }
+  ) {}
 
   @Post()
   @ApiBody({ type: PostForCreate })
@@ -65,17 +62,16 @@ export class PostController {
     if (permision) {
       return await this.postService.updatePost(postRequest, req?.user);
     }
-    throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
+    throw new HttpException("you have not permision", HttpStatus.UNAUTHORIZED);
   }
 
-  @Delete('/:id')
-  @ApiParam({ name: 'id', type: String })
-
+  @Delete("/:id")
+  @ApiParam({ name: "id", type: String })
   @ApiOkResponse({
-    description: 'delete ok',
+    description: "delete ok",
     type: PostForResponse,
   })
-  async deletePost(@Param('id') id: string, @Request() req) {
+  async deletePost(@Param("id") id: string, @Request() req) {
     const post = new PostForResponse();
     const account = new AccountForToken();
     const postDetail = await this.postService.getDetailPostById(id);
@@ -86,24 +82,27 @@ export class PostController {
     if (permision) {
       return await this.postService.deletePost(id, req?.user);
     }
-    throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
+    throw new HttpException("you have not permision", HttpStatus.UNAUTHORIZED);
   }
 
   @Get("/valid-post")
-  @ApiBearerAuth('Authorization')
+  @ApiBearerAuth("Authorization")
   @Roles(Role.User)
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
   @ApiOkResponse({
-    type: [PostForFullResponse],
+    type: PostForFullResponse,
   })
   @ApiQuery({
-    type: PaginationAndFilter
+    type: PaginationAndFilter,
   })
   async getValidPostByUser(@Request() req, @Query() query: PaginationAndFilter) {
-    return await this.postService.getValidPostByAccount(req?.user?.id, query)
+    return await this.postService.getValidPostByAccount(req?.user?.id, query);
   }
 
   @Get("/get-all-post")
+  @ApiOkResponse({
+    type: PostForFullResponse,
+  })
   @Roles(Role.Admin)
   async getAllPost(@Query() query: PostForQuery) {
     return this.postService.getAllPost(query);
