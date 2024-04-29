@@ -1,30 +1,28 @@
-import {
-  Ability,
-  AbilityBuilder,
-  AbilityClass,
-  ExtractSubjectType,
-  InferSubjects,
-} from '@casl/ability';
-import { Injectable } from '@nestjs/common';
-import { AccountForToken } from 'src/auth/dto/AccountForToken';
-import { CommentForResponse } from 'src/comment/dto/CommentForResponse';
-import { Role } from 'src/decorator/role.enum';
-import { HotContentForResponse } from 'src/hot-content/dto/HotContentForResponse';
-import { PostForResponse } from 'src/post/dto/PostForResponse';
-import { UserForResponse } from 'src/user/dto/UserForResponse';
+import { Ability, AbilityBuilder, AbilityClass, ExtractSubjectType, InferSubjects } from "@casl/ability";
+import { Injectable } from "@nestjs/common";
+import { AccountForToken } from "src/auth/dto/AccountForToken";
+import { CommentForResponse } from "src/comment/dto/CommentForResponse";
+import { Role } from "src/decorator/role.enum";
+import { HotContentForResponse } from "src/hot-content/dto/HotContentForResponse";
+import { PostForResponse } from "src/post/dto/PostForResponse";
+import { UserForResponse } from "src/user/dto/UserForResponse";
 
 export enum Action {
-  Manage = 'manage',
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
+  Manage = "manage",
+  Create = "create",
+  Read = "read",
+  Update = "update",
+  Delete = "delete",
 }
 export type Subjects =
   | InferSubjects<
-    typeof AccountForToken | typeof PostForResponse | typeof UserForResponse | typeof HotContentForResponse | typeof CommentForResponse
+    | typeof AccountForToken
+    | typeof PostForResponse
+    | typeof UserForResponse
+    | typeof HotContentForResponse
+    | typeof CommentForResponse
   >
-  | 'all';
+  | "all";
 export type AppAbility = Ability<[Action, Subjects]>;
 
 @Injectable()
@@ -34,12 +32,12 @@ export class CaslAbilityFactory {
     const { can, build } = new AbilityBuilder(
       Ability as AbilityClass<AppAbility>,
     );
-    if (account?.roles.includes(Role.Admin)) {
-      //IF ADMIN, you can do anything;
-      can(Action.Manage, 'all');
+    if (account?.roles?.includes(Role.Admin)) {
+      // IF ADMIN, you can do anything;
+      can(Action.Manage, "all");
     } else {
-      //This is USER PERMISION
-      can(Action.Read, 'all');
+      // This is USER PERMISION
+      can(Action.Read, "all");
       can(Action.Update, PostForResponse, {
         accountId: account.id,
       });
@@ -66,8 +64,7 @@ export class CaslAbilityFactory {
       });
     }
     return build({
-      detectSubjectType: (subject) =>
-        subject.constructor as ExtractSubjectType<Subjects>,
+      detectSubjectType: (subject) => subject.constructor as ExtractSubjectType<Subjects>,
     });
   }
 }
