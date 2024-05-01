@@ -149,6 +149,7 @@ export class PostService {
     //TODO:  filter and pagination
     const today = new Date();
     const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const threeDaysAgo = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
     try {
       const account = await this.prismaService.account.findUnique({
         where: { id: idAccount },
@@ -157,10 +158,50 @@ export class PostService {
           followings: true,
         },
       });
+      const currentPostOfAccount = await this.prismaService.post.findMany({
+        where: {
+          accountId: idAccount,
+          created_at: {
+            gte: threeDaysAgo,
+            lte: today,
+          },
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        select: {
+          id: true,
+          contentText: true,
+          accountId: true,
+          account: {
+            select: {
+              id: true,
+              fullName: true,
+              phone: true,
+              aboutMe: true,
+              nickName: true,
+              birth: true,
+              address: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+          totalComment: true,
+          totalShare: true,
+          totalReaction: true,
+        },
+      });
       const getFollowerAccount = account.followers;
       const key_num = this.getRandomIntInclusive(1, 10);
       if (key_num >= 1 && key_num <= 5) {
-        let arr_post = [];
+        let arr_post = currentPostOfAccount;
         for (let i = 0; i < getFollowerAccount.length; i++) {
           const postByAccount = await this.prismaService.post.findMany({
             where: {
@@ -189,72 +230,158 @@ export class PostService {
               created_at: 'desc',
             },
             take: 2,
+            select: {
+              id: true,
+              contentText: true,
+              accountId: true,
+              account: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  phone: true,
+                  aboutMe: true,
+                  nickName: true,
+                  birth: true,
+                  address: true,
+                },
+              },
+              created_at: true,
+              updated_at: true,
+              images: {
+                select: {
+                  accountId: true,
+                  postId: true,
+                  path: true,
+                },
+              },
+              totalComment: true,
+              totalShare: true,
+              totalReaction: true,
+            },
           });
           arr_post.push(...postByAccount);
         }
         return {
-          data: this.shuffle(arr_post),
+          data: arr_post,
           pagination: undefined,
         };
       }
       if (key_num > 5 && key_num <= 7) {
+        let arr_post = currentPostOfAccount;
+        const result = await this.prismaService.post.findMany({
+          orderBy: {
+            totalComment: 'desc',
+          },
+          where: {
+            accountId: {
+              in: getFollowerAccount.map((item) => item.followingId),
+            },
+          },
+          take: 10,
+          select: {
+            id: true,
+            contentText: true,
+            accountId: true,
+            account: {
+              select: {
+                id: true,
+                fullName: true,
+                phone: true,
+                aboutMe: true,
+                nickName: true,
+                birth: true,
+                address: true,
+              },
+            },
+            created_at: true,
+            updated_at: true,
+            images: {
+              select: {
+                accountId: true,
+                postId: true,
+                path: true,
+              },
+            },
+            totalComment: true,
+            totalShare: true,
+            totalReaction: true,
+          },
+        });
+        arr_post.push(...result);
         return {
-          data: this.shuffle(
-            await this.prismaService.post.findMany({
-              orderBy: {
-                totalComment: 'desc',
-              },
-              where: {
-                accountId: {
-                  in: getFollowerAccount.map((item) => item.followingId),
-                },
-              },
-              take: 10,
-            }),
-          ),
+          data: arr_post,
           pagination: undefined,
         };
       }
       if (key_num > 7) {
-        return {
-          data: this.shuffle(
-            await this.prismaService.post.findMany({
-              where: {
-                accountId: {
-                  in: getFollowerAccount.map((item) => item.followingId),
-                },
-                OR: [
-                  {
-                    reactions: {
-                      some: {
-                        created_at: {
-                          gte: sevenDaysAgo,
-                          lte: today,
-                        },
-                      },
-                    },
-                    comments: {
-                      some: {
-                        created_at: {
-                          gte: sevenDaysAgo,
-                          lte: today,
-                        },
-                      },
-                    },
-                    postShares: {
-                      some: {
-                        created_at: {
-                          gte: sevenDaysAgo,
-                          lte: today,
-                        },
-                      },
+        let arr_post = currentPostOfAccount;
+        const result = await this.prismaService.post.findMany({
+          where: {
+            accountId: {
+              in: getFollowerAccount.map((item) => item.followingId),
+            },
+            OR: [
+              {
+                reactions: {
+                  some: {
+                    created_at: {
+                      gte: sevenDaysAgo,
+                      lte: today,
                     },
                   },
-                ],
+                },
+                comments: {
+                  some: {
+                    created_at: {
+                      gte: sevenDaysAgo,
+                      lte: today,
+                    },
+                  },
+                },
+                postShares: {
+                  some: {
+                    created_at: {
+                      gte: sevenDaysAgo,
+                      lte: today,
+                    },
+                  },
+                },
               },
-              take: 10,
-            }),
-          ),
+            ],
+          },
+          take: 10,
+          select: {
+            id: true,
+            contentText: true,
+            accountId: true,
+            account: {
+              select: {
+                id: true,
+                fullName: true,
+                phone: true,
+                aboutMe: true,
+                nickName: true,
+                birth: true,
+                address: true,
+              },
+            },
+            created_at: true,
+            updated_at: true,
+            images: {
+              select: {
+                accountId: true,
+                postId: true,
+                path: true,
+              },
+            },
+            totalComment: true,
+            totalShare: true,
+            totalReaction: true,
+          },
+        });
+        arr_post.push(...result);
+        return {
+          data: arr_post,
           pagination: undefined,
         };
       }
