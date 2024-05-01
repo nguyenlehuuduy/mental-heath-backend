@@ -3,6 +3,7 @@ import { Account } from '@prisma/client';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
 import { UserForResponse } from 'src/user/dto/UserForResponse';
+import { ImagePostForResponse } from './ImagePostForResponse';
 
 export class PostForResponse {
   @ApiProperty()
@@ -39,16 +40,20 @@ export class PostForResponse {
   totalComment: number;
   @ApiProperty()
   totalShare: number;
+  @ApiProperty({
+    type: [ImagePostForResponse],
+  })
+  images: Array<ImagePostForResponse>;
   //TODO: react, comment,... later
 }
 
 export class PostForFullResponse {
   @ApiProperty({
-    type: [PostForResponse]
+    type: [PostForResponse],
   })
   data: Array<PostForResponse>;
   @ApiProperty({
-    required: false
+    required: false,
   })
-  pagination: PaginationAndFilter
+  pagination: PaginationAndFilter;
 }

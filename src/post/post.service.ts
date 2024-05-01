@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
-import { PostForCreate } from './dto/PostForCreate';
+import { ImageUploadForPost, PostForCreate } from './dto/PostForCreate';
 import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
 import { PostForUpdate } from './dto/PostForUpdate';
 import { faker } from '@faker-js/faker';
@@ -21,10 +21,23 @@ export class PostService {
     account: AccountForToken,
   ): Promise<PostForResponse> {
     try {
+      const listImageUpload: Array<ImageUploadForPost> =
+        postRequest?.imagePaths?.map((item) => {
+          return {
+            accountId: account.id,
+            path: item,
+            //TODO:130751_type image update latter
+          };
+        }) || [];
       return await this.prismaService.post.create({
         data: {
           contentText: postRequest.contentText,
           accountId: account.id,
+          images: {
+            createMany: {
+              data: listImageUpload,
+            },
+          },
         },
         select: {
           id: true,
@@ -46,6 +59,13 @@ export class PostService {
           totalComment: true,
           totalReaction: true,
           totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -85,6 +105,13 @@ export class PostService {
           totalComment: true,
           totalReaction: true,
           totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -263,6 +290,13 @@ export class PostService {
           totalComment: true,
           totalReaction: true,
           totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
         },
         where: {
           contentText: {
