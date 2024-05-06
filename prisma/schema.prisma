@@ -79,6 +79,7 @@ model Messages {
   owner      Account     @relation(fields: [ownerId], references: [id])
   roomId     String
   room       RoomMessage @relation(fields: [roomId], references: [id])
+  contentMessage String
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
 }
