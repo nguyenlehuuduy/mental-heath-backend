@@ -20,6 +20,7 @@ import { RoomMessageService } from './room-message.service';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
 import { AuthorizationGuard } from 'src/guard/authorization.guard';
 import { DetailRoomMessage } from './dto/DetailRoomMessage';
+import { SendMessageForPost } from './dto/ContentMessage';
 
 @ApiTags('room-message')
 @Controller('room-message')
@@ -65,6 +66,32 @@ export class RoomMessageController {
         data: allMessage,
         message: 'Get all message successful.',
         code: HttpStatus.OK,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post()
+  @ApiOkResponse({
+    type: [SendMessageForPost],
+  })
+  async sendMessageToRoom(@Request() req) {
+    try {
+      const { roomMessageId, contentMessage } = req.body;
+      const newMessage = await this.roomMessageService.sendMessageToRoom(
+        roomMessageId,
+        contentMessage,
+        req?.user,
+      );
+      return {
+        data: newMessage,
+        message: 'Send message successful.',
+        code: HttpStatus.CREATED,
       };
     } catch (error) {
       console.error(error);

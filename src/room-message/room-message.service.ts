@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { RoomMessageForPost } from './dto/RoomMessageForPost';
 import { RoomMessageForGet } from './dto/RoomMessageForGet';
 import { DetailRoomMessage } from './dto/DetailRoomMessage';
+import { SendMessageForPost } from './dto/ContentMessage';
 
 @Injectable()
 export class RoomMessageService {
@@ -118,6 +119,25 @@ export class RoomMessageService {
       const endIndex = startIndex + limit;
       const paginatedMessages = allMessageInRoom.slice(startIndex, endIndex);
       return paginatedMessages;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async sendMessageToRoom(
+    roomMessageId: string,
+    contentMessage: string,
+    account: AccountForToken,
+  ): Promise<SendMessageForPost> {
+    try {
+      return await this.prismaService.messages.create({
+        data: {
+          ownerId: account.id,
+          roomId: roomMessageId,
+          contentMessage: contentMessage,
+        },
+      });
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
