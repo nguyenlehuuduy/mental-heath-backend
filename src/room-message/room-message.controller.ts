@@ -53,7 +53,6 @@ export class RoomMessageController {
     @Param('id') roomMessageId: string,
     @Request() req,
   ) {
-    try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 20;
       const allMessage =
@@ -62,43 +61,18 @@ export class RoomMessageController {
           page,
           limit,
         );
-      return {
-        data: allMessage,
-        message: 'Get all message successful.',
-        code: HttpStatus.OK,
-      };
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Internal Server Error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
     }
-  }
 
   @Post()
   @ApiOkResponse({
     type: [SendMessageForPost],
   })
   async sendMessageToRoom(@Request() req) {
-    try {
       const { roomMessageId, contentMessage } = req.body;
       const newMessage = await this.roomMessageService.sendMessageToRoom(
         roomMessageId,
         contentMessage,
         req?.user,
       );
-      return {
-        data: newMessage,
-        message: 'Send message successful.',
-        code: HttpStatus.CREATED,
-      };
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Internal Server Error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 }
