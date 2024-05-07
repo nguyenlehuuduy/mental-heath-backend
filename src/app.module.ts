@@ -15,6 +15,8 @@ import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
+import { NotificationModule } from './notification/notification.module';
+import { TypenotificationModule } from './typenotification/typenotification.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { FollowModule } from './follow/follow.module';
     CommentModule,
     FileModule,
     FollowModule,
+    NotificationModule,
+    TypenotificationModule,
   ],
   controllers: [],
   providers: [],
