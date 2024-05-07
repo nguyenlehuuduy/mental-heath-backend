@@ -79,8 +79,20 @@ model Messages {
   owner      Account     @relation(fields: [ownerId], references: [id])
   roomId     String
   room       RoomMessage @relation(fields: [roomId], references: [id])
+  contentMessage String
+  typeMessageId String 
+  typeMessage TypeMessage @relation(fields: [typeMessageId], references: [id])
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
+}
+
+model TypeMessage {
+  id String @id @default(uuid())
+  nameTypeMessage String
+  descriptionTypeMessage String
+  messages Messages[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Role {
