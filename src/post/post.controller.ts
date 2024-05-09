@@ -12,22 +12,29 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { PostService } from './post.service';
-import { Roles } from 'src/decorator/roles.decorator';
-import { Role } from 'src/decorator/role.enum';
-import { AuthenticationGuard } from 'src/guard/authentication.guard';
-import { AuthorizationGuard } from 'src/guard/authorization.guard';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import {
   Action,
   CaslAbilityFactory,
 } from 'src/casl/casl-ability.factory/casl-ability.factory';
-import { AccountForToken } from 'src/auth/dto/AccountForToken';
-import { PostForCreate } from './dto/PostForCreate';
-import { PostForUpdate } from './dto/PostForUpdate';
-import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
+import { Role } from 'src/decorator/role.enum';
+import { Roles } from 'src/decorator/roles.decorator';
+import { AuthenticationGuard } from 'src/guard/authentication.guard';
+import { AuthorizationGuard } from 'src/guard/authorization.guard';
+import { PostForCreate } from './dto/PostForCreate';
 import { PostForQuery } from './dto/PostForQuery';
+import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
+import { PostForUpdate } from './dto/PostForUpdate';
+import { PostService } from './post.service';
 
 @ApiTags('post')
 @Controller('post')
@@ -38,7 +45,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) { }
+  ) {}
 
   @Post()
   @ApiBody({ type: PostForCreate })
@@ -70,7 +77,6 @@ export class PostController {
 
   @Delete('/:id')
   @ApiParam({ name: 'id', type: String })
-
   @ApiOkResponse({
     description: 'delete ok',
     type: PostForResponse,
@@ -89,21 +95,27 @@ export class PostController {
     throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
   }
 
-  @Get("/valid-post")
+  @Get('/valid-post')
   @ApiBearerAuth('Authorization')
   @Roles(Role.User)
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
   @ApiOkResponse({
-    type: [PostForFullResponse],
+    type: PostForFullResponse,
   })
   @ApiQuery({
-    type: PaginationAndFilter
+    type: PaginationAndFilter,
   })
-  async getValidPostByUser(@Request() req, @Query() query: PaginationAndFilter) {
-    return await this.postService.getValidPostByAccount(req?.user?.id, query)
+  async getValidPostByUser(
+    @Request() req,
+    @Query() query: PaginationAndFilter,
+  ) {
+    return await this.postService.getValidPostByAccount(req?.user?.id, query);
   }
 
-  @Get("/get-all-post")
+  @Get('/get-all-post')
+  @ApiOkResponse({
+    type: PostForFullResponse,
+  })
   @Roles(Role.Admin)
   async getAllPost(@Query() query: PostForQuery) {
     return this.postService.getAllPost(query);

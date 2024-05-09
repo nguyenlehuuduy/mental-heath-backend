@@ -1,10 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Post, Req, Request, UseGuards } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { Role } from "src/decorator/role.enum";
 import { Roles } from "src/decorator/roles.decorator";
 import { AuthenticationGuard } from "src/guard/authentication.guard";
 import { AuthorizationGuard } from "src/guard/authorization.guard";
+import { UserForResponse } from "src/user/dto/UserForResponse";
 import { FollowForCreate } from "./dto/FollowForCreate";
+import { FollowForGet } from "./dto/FollowForGet";
+import { RequestFollowForResponse } from "./dto/RequestFollowForResponse";
 import { FollowService } from "./follow.service";
 
 @Controller("follow")
@@ -17,7 +20,10 @@ export class FollowController {
   ) {}
 
   @Post()
-  async follow(@Body() data: FollowForCreate): Promise<FollowForCreate> {
+  @ApiOkResponse({
+    type: FollowForGet,
+  })
+  async follow(@Body() data: FollowForCreate): Promise<FollowForGet> {
     return await this.followService.createRequestFollow(data);
   }
 
@@ -37,16 +43,25 @@ export class FollowController {
   }
 
   @Get("/followings")
+  @ApiOkResponse({
+    type: [UserForResponse],
+  })
   async getAllFollowingOfAccount(@Request() req) {
     return await this.followService.getAllFollowings(req?.user?.id);
   }
 
   @Get("/followers")
+  @ApiOkResponse({
+    type: [UserForResponse],
+  })
   async getAllFollowerOfAccount(@Request() req) {
     return await this.followService.getAllFollowers(req?.user?.id);
   }
 
   @Get("/request-followers")
+  @ApiOkResponse({
+    type: [RequestFollowForResponse],
+  })
   async getAllRequestFollowers(@Request() req) {
     return await this.followService.getAllRequestFollowers(req?.user?.id);
   }

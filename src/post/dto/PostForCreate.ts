@@ -11,4 +11,13 @@ export class PostForCreate {
   @IsNotEmpty()
   @IsString()
   accountId: string;
+
+  @ApiProperty()
+  imagePaths?: Array<string>;
+}
+
+export class ImageUploadForPost {
+  accountId: string;
+  path: string;
+  typeImageId?: string;
 }

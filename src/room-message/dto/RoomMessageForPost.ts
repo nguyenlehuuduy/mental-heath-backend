@@ -1,3 +1,8 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty } from "class-validator";
+
 export class RoomMessageForPost {
-  accountInRoom: Array<string>
+  @ApiProperty()
+  @IsNotEmpty()
+  accountInRoom: Array<string>;
 }

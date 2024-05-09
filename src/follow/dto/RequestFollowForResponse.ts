@@ -1,21 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
-import { AccountForToken } from "src/auth/dto/AccountForToken";
+import { UserForResponse } from "src/user/dto/UserForResponse";
 
-export class RoomMessageForGet {
+export class RequestFollowForResponse {
   @ApiProperty()
   @IsNotEmpty()
   id: string;
   @ApiProperty()
   @IsNotEmpty()
-  created_at: Date;
+  sender: UserForResponse;
   @ApiProperty()
   @IsNotEmpty()
-  updated_at: Date;
+  created_at: string | Date;
   @ApiProperty()
   @IsNotEmpty()
-  accountInRoom: Array<AccountForToken>;
-  @ApiProperty()
-  @IsNotEmpty()
-  nameRoom?: string;
+  updated_at: string | Date;
 }
