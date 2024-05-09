@@ -15,7 +15,7 @@ import { PostForQuery } from './dto/PostForQuery';
 
 @Injectable()
 export class PostService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   async createPost(
     postRequest: PostForCreate,
     account: AccountForToken,
@@ -445,6 +445,48 @@ export class PostService {
         },
         skip: skip,
         take: take,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getPostDetail(postId: string): Promise<PostForResponse> {
+    try {
+      return await this.prismaService.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          id: true,
+          contentText: true,
+          accountId: true,
+          account: {
+            select: {
+              id: true,
+              email: true,
+              fullName: true,
+              nickName: true,
+              birth: true,
+              address: true,
+              aboutMe: true,
+              phone: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+          totalComment: true,
+          totalReaction: true,
+          totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+        },
       });
     } catch (error) {
       console.error(error);
