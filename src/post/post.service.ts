@@ -146,7 +146,6 @@ export class PostService {
     query: PaginationAndFilter,
   ): Promise<PostForFullResponse> {
     const today = new Date();
-    const threeDaysAgo = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
     const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
     try {
       const account = await this.prismaService.account.findUnique({
@@ -161,8 +160,9 @@ export class PostService {
         limit: query.limit > 0 ? query.limit : 5,
         pageNo: query.pageNo > 0 ? query.pageNo : 1,
       };
-      const take = Number(pagination.limit) || 5;
-      const skip = take * Number(pagination.pageNo);
+      const take = Number(pagination.limit);
+      const skip =
+        pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo);
       const select = {
         id: true,
         contentText: true,
@@ -193,53 +193,25 @@ export class PostService {
         comments: true,
         postShares: true,
       };
-      const currentPostOfAccount = await this.prismaService.post.findMany({
-        where: {
-          accountId: idAccount,
-          created_at: {
-            gte: threeDaysAgo,
-            lte: today,
-          },
-        },
-        orderBy: {
-          created_at: 'desc',
-        },
-        select: select,
-      });
-      if (pagination.pageNo < 2) {
-        for (const item of currentPostOfAccount) {
-          dataResponse.push({
-            account: item.account,
-            contentText: item.contentText,
-            created_at: item.created_at,
-            id: item.id,
-            images: item.images,
-            is_liked: !!item.reactions.find(
-              (item) => item.accountId === idAccount,
-            ),
-            totalComment: item.comments.length ?? 0,
-            totalReaction: item.reactions.length ?? 0,
-            totalShare: item.postShares.length ?? 0,
-            updated_at: item.updated_at,
-          });
-        }
-      }
       const totalRecord = await this.prismaService.post.count({
         where: {
           accountId: {
-            in: followings,
+            in: [...followings, idAccount],
           },
         },
       });
       const result = await this.prismaService.post.findMany({
         where: {
           accountId: {
-            in: followings,
+            in: [...followings, idAccount],
           },
           created_at: {
             gte: sevenDaysAgo,
             lte: today,
           },
+        },
+        orderBy: {
+          created_at: 'desc',
         },
         select: select,
         skip: skip,
@@ -249,6 +221,7 @@ export class PostService {
       for (const item of result) {
         dataResponse.push({
           account: item.account,
+          accountId: item.account.id,
           contentText: item.contentText,
           created_at: item.created_at,
           id: item.id,

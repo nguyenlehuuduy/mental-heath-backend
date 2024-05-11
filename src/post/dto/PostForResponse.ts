@@ -17,6 +17,10 @@ export class PostForResponse {
 
   @ApiProperty()
   @IsNotEmpty()
+  accountId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   account: UserForResponse;
 
