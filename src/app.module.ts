@@ -18,7 +18,7 @@ import { FollowModule } from './follow/follow.module';
 import { MockDataController } from './mock-data/mock-data.controller';
 import { MockDataModule } from './mock-data/mock-data.module';
 import { NotificationModule } from './notification/notification.module';
-import { TypenotificationModule } from './typenotification/typenotification.module';
+import { TypenotificationModule } from './type-notification/typenotification.module';
 
 @Module({
   imports: [

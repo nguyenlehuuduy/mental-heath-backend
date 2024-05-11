@@ -1,10 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 
-export class CreateNotification {
+export class NotificationForUpdate {
+  @IsOptional()
   @IsString()
-  accountId: string;
+  accountId?: string;
 
   @IsOptional()
   @IsString()
@@ -30,16 +30,7 @@ export class CreateNotification {
   @IsString()
   messageNotifications?: string;
 
-  @ApiProperty({
-    required: false,
-  })
-  created_at?: Date
-
-  @ApiProperty({
-    required: false,
-  })
-  updated_at?: Date
-
+  @IsOptional()
   @Type()
-  typeNotificationId: string;
+  typeNotificationId?: string;
 }

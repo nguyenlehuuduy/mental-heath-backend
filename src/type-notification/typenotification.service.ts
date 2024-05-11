@@ -1,20 +1,32 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTypeNotification } from './dto/CreateTypeNotification';
-import { UpdateTypeNotification } from './dto/UpdateTypeNotification';
+import { TypeNotificationForCreate } from './dto/TypeNotificationForCreate';
+import { TypeNotificationForUpdate } from './dto/TypeNotificationForUpdate';
+import { TypeNotificationForResponse } from './dto/TypeNotificationForRespone';
 
 @Injectable()
 export class TypeNotificationService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
 
-  async create(createTypeNotification: CreateTypeNotification): Promise<CreateTypeNotification> {
+  async getAllTypeNoti(): Promise<Array<TypeNotificationForResponse>> {
     try {
-      return  await this.prismaService.typeNotification.create({
+      return this.prismaService.typeNotification.findMany();
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async create(
+    createTypeNotification: TypeNotificationForCreate,
+  ): Promise<TypeNotificationForResponse> {
+    try {
+      return await this.prismaService.typeNotification.create({
         data: {
           typeName: createTypeNotification.typeName,
           description: createTypeNotification.description,
           thumbnailNoti: createTypeNotification.thumbnailNoti,
-        }
+        },
       });
     } catch (error) {
       console.error(error);
@@ -22,16 +34,19 @@ export class TypeNotificationService {
     }
   }
 
-  async update(updateTypeNotification: UpdateTypeNotification, id: string): Promise<UpdateTypeNotification> {
+  async update(
+    updateTypeNotification: TypeNotificationForUpdate,
+    id: string,
+  ): Promise<TypeNotificationForResponse> {
     try {
       return await this.prismaService.typeNotification.update({
         where: {
-          id: id
+          id: id,
         },
         data: {
           description: updateTypeNotification.description,
           typeName: updateTypeNotification.typeName,
-        }
+        },
       });
     } catch (error) {
       console.error(error);
@@ -39,17 +54,16 @@ export class TypeNotificationService {
     }
   }
 
-  async delete(id: string){
+  async delete(id: string) {
     try {
       return await this.prismaService.typeNotification.delete({
         where: {
-          id: id
-        }
+          id: id,
+        },
       });
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
-
 }
