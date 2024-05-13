@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Account } from '@prisma/client';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
 import { UserForResponse } from 'src/user/dto/UserForResponse';
@@ -18,7 +17,6 @@ export class PostForResponse {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
   accountId: string;
 
   @ApiProperty()
@@ -43,8 +41,8 @@ export class PostForResponse {
   @ApiProperty({
     type: [ImagePostForResponse],
   })
-  images: Array<ImagePostForResponse>;
-  //TODO: react, comment,... later
+  images?: Array<ImagePostForResponse>;
+  is_liked?: boolean;
 }
 
 export class PostForFullResponse {

@@ -1,32 +1,37 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RoomMessageForPost } from './dto/RoomMessageForPost';
 import { RoomMessageForGet } from './dto/RoomMessageForGet';
-import { SendMessageForPost } from './dto/ContentMessage';
-import { DetailRoomMessage } from './dto/AllMessageInRoom';
+import { RoomChatBotForGet } from './dto/RoomChatBotForGet';
+import { MessageForResponse } from './dto/MessageForResponse';
+import { RoomBotInfForResponse } from './dto/RoomBotInfForResponse';
 
 @Injectable()
 export class RoomMessageService {
   constructor(private prismaService: PrismaService) {}
   async postRoomMessage(
-    chatPartnerId: string,
+    room: RoomMessageForPost,
     account: AccountForToken,
   ): Promise<RoomMessageForGet> {
     try {
-      const existingRoom = await this.prismaService.roomMessage.findFirst({
+      const existRoom = await this.prismaService.roomMessage.findFirst({
         where: {
-          AND: [
-            { accountInRoom: { some: { id: chatPartnerId } } },
-            { accountInRoom: { some: { id: account.id } } },
-          ],
+          accountInRoom: {
+            every: {
+              id: {
+                in: room.accountInRoom,
+              },
+            },
+          },
         },
       });
-      if (!existingRoom) {
+
+      if (!existRoom || room.accountInRoom.includes('0308051202024GZMTH')) {
         const result = await this.prismaService.roomMessage.create({
           data: {
-            accountInRoom: {
-              connect: [{ id: account.id }, { id: chatPartnerId }],
-            },
+            accountInRoom: { connect: { id: account.id } },
+            nameRoom: room.name ?? '',
           },
           select: {
             id: true,
@@ -35,14 +40,18 @@ export class RoomMessageService {
             accountInRoom: {
               select: { fullName: true, email: true, id: true },
             },
+            nameRoom: true,
           },
+        });
+        room.accountInRoom.map(async (item) => {
+          await this.prismaService.roomMessage.update({
+            data: { accountInRoom: { connect: { id: item } } },
+            where: { id: result.id },
+          });
         });
         return result;
       } else {
-        throw new HttpException(
-          'Room Message was exist',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new HttpException('room id was exist', HttpStatus.BAD_REQUEST);
       }
     } catch (error) {
       console.error(error);
@@ -69,8 +78,6 @@ export class RoomMessageService {
           },
         },
       });
-      console.log(allRoomValid);
-
       return allRoomValid.map((item) => {
         return {
           ...item,
@@ -86,27 +93,86 @@ export class RoomMessageService {
     }
   }
 
-  async getAllMessageInRoomMessage(
-    roomMessageId: string,
-    page: number,
-    limit: number,
-  ): Promise<Array<DetailRoomMessage>> {
+  async getRoomChatBot(
+    account: AccountForToken,
+  ): Promise<Array<RoomChatBotForGet>> {
     try {
-      const allMessageInRoom = await this.prismaService.messages.findMany({
+      const allRoomValid = await this.prismaService.roomMessage.findMany({
         where: {
-          roomId: roomMessageId,
+          accountInRoom: {
+            some: { id: account.id },
+          },
+          AND: {
+            accountInRoom: {
+              some: { id: process.env.ID_CHAT_BOT },
+            },
+          },
+        },
+        select: {
+          id: true,
+          created_at: true,
+          updated_at: true,
+          nameRoom: true,
+        },
+        orderBy: {
+          created_at: 'desc',
         },
       });
-      if (allMessageInRoom.length === 0) {
-        throw new HttpException(
-          'No messages found for the specified room.',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedMessages = allMessageInRoom.slice(startIndex, endIndex);
-      return paginatedMessages;
+      return allRoomValid;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getAllMessageInRoom(id: string): Promise<Array<MessageForResponse>> {
+    try {
+      return await this.prismaService.messages.findMany({
+        where: {
+          roomId: id,
+        },
+        select: {
+          id: true,
+          owner: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              avata: true,
+            },
+          },
+          ownerId: true,
+          roomId: true,
+          created_at: true,
+          updated_at: true,
+          contentText: true,
+        },
+        orderBy: { created_at: 'asc' },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getInfRoom(id: string): Promise<RoomBotInfForResponse> {
+    try {
+      return await this.prismaService.roomMessage.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          nameRoom: true,
+          created_at: true,
+          accountInRoom: {
+            select: {
+              fullName: true,
+              id: true,
+              nickName: true,
+              avata: true,
+            },
+          },
+        },
+      });
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);

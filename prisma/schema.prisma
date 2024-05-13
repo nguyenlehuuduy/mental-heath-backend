@@ -23,6 +23,7 @@ model Account {
   nickName              String?
   birth                 DateTime?
   address               String?
+  avata                 String?
   posts                 Post[]
   followers             FollowShip[]    @relation("Followings")
   followings            FollowShip[]    @relation("Followers")
@@ -71,28 +72,29 @@ model RoomMessage {
   Messages      Messages[]
   created_at    DateTime?  @default(now())
   updated_at    DateTime?  @updatedAt
+  nameRoom      String?
 }
 
 model Messages {
-  id         String      @id @default(uuid())
-  ownerId    String
-  owner      Account     @relation(fields: [ownerId], references: [id])
-  roomId     String
-  room       RoomMessage @relation(fields: [roomId], references: [id])
-  contentMessage String
-  typeMessageId String 
-  typeMessage TypeMessage @relation(fields: [typeMessageId], references: [id])
-  created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
+  id            String      @id @default(uuid())
+  ownerId       String
+  owner         Account     @relation(fields: [ownerId], references: [id])
+  roomId        String
+  room          RoomMessage @relation(fields: [roomId], references: [id])
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  contentText   String      @db.Text
+  typeMessageId String
+  typeMessage   TypeMessage @relation(fields: [typeMessageId], references: [id])
 }
 
 model TypeMessage {
-  id String @id @default(uuid())
-  nameTypeMessage String
+  id                     String     @id @default(uuid())
+  nameTypeMessage        String
   descriptionTypeMessage String
-  messages Messages[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  messages               Messages[]
+  created_at             DateTime   @default(now())
+  updated_at             DateTime   @updatedAt
 }
 
 model Role {
@@ -225,10 +227,11 @@ model Notification {
 }
 
 model TypeNotification {
-  id           String         @id @default(uuid())
-  typeName     String
-  description  String
-  notification Notification[]
+  id            String         @id @default(uuid())
+  typeName      String
+  description   String
+  thumbnailNoti String
+  notification  Notification[]
 }
 
 model Feature {

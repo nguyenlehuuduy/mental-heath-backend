@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { LikeService } from './like.service';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
 import { AuthorizationGuard } from 'src/guard/authorization.guard';
@@ -11,13 +21,14 @@ import { LikeForGet } from './dto/LikeForGet';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Roles(Role.User)
-
 export class LikeController {
-  constructor(
-    private readonly likeService: LikeService) { }
+  constructor(private readonly likeService: LikeService) {}
   @ApiBody({ type: LikeForPost })
   @Post()
-  async updateStatusLikes(@Body() likeForPost: LikeForPost): Promise<LikeForGet> {
-    return await this.likeService.updateStatusLikes(likeForPost);
+  async updateStatusLikes(
+    @Body() likeForPost: LikeForPost,
+    @Request() req,
+  ): Promise<LikeForGet> {
+    return await this.likeService.updateStatusLikes(likeForPost, req?.user);
   }
 }

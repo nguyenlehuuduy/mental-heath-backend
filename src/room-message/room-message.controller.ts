@@ -17,8 +17,6 @@ import { RoomMessageForGet } from './dto/RoomMessageForGet';
 import { RoomMessageService } from './room-message.service';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
 import { AuthorizationGuard } from 'src/guard/authorization.guard';
-import { SendMessageForPost } from './dto/ContentMessage';
-import { DetailRoomMessage } from './dto/AllMessageInRoom';
 
 @ApiTags('room-message')
 @Controller('room-message')
@@ -31,12 +29,8 @@ export class RoomMessageController {
   @ApiOkResponse({
     type: RoomMessageForGet,
   })
-  async createNewRoomMessage(@Request() req) {
-    const { chatPartnerId } = req.body;
-    return await this.roomMessageService.postRoomMessage(
-      chatPartnerId,
-      req?.user,
-    );
+  async createNewRoomMessage(@Body() room: RoomMessageForPost, @Request() req) {
+    return this.roomMessageService.postRoomMessage(room, req?.user);
   }
 
   @Get()
@@ -44,24 +38,22 @@ export class RoomMessageController {
     type: [RoomMessageForGet],
   })
   async getAllValidRoomMessage(@Request() req) {
-    return await this.roomMessageService.getValidRoomMessage(req?.user);
+    return this.roomMessageService.getValidRoomMessage(req?.user);
+  }
+
+  @Get('chat-bot')
+  async getAllRoomChatBot(@Request() req) {
+    return this.roomMessageService.getRoomChatBot(req?.user);
+  }
+
+  @Get('messages/:id')
+  async getAllMessageInRoom(@Param('id') id: string) {
+    return this.roomMessageService.getAllMessageInRoom(id);
   }
 
   @Get(':id')
-  @ApiOkResponse({
-    type: [DetailRoomMessage],
-  })
-  async getAllMessageInRoomMessage(
-    @Param('id') roomMessageId: string,
-    @Request() req,
-  ) {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    return await this.roomMessageService.getAllMessageInRoomMessage(
-      roomMessageId,
-      page,
-      limit,
-    );
+  async getInfRoom(@Param('id') id: string) {
+    return this.roomMessageService.getInfRoom(id);
   }
 
   @Post('/send-message')
