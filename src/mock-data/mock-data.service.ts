@@ -128,4 +128,96 @@ export class MockDataService {
       console.error(error);
     }
   }
+  async createTabMenu() {
+    try {
+      return this.prisma.tabMenu.createMany({
+        data: [
+          {
+            name: 'Trang chu',
+            iconUrl: '/home_icon.svg',
+            url: 'home',
+          },
+          {
+            name: 'Chuyen gia',
+            iconUrl: '/professional_icon.svg"',
+            url: 'pro',
+          },
+          {
+            name: 'Ban be',
+            iconUrl: '/friend_icon.svg',
+            url: 'friends',
+          },
+          {
+            name: 'Chat Bot',
+            iconUrl: '/chatbot_icon.svg',
+            url: 'chat-bot',
+          },
+          {
+            name: 'Blog',
+            iconUrl: '/chatbot_icon.svg',
+            url: 'blog',
+          },
+          {
+            name: 'Khong gian ao',
+            iconUrl: '/virtual_space_icon.svg',
+            url: 'virtual-space',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async createBot() {
+    try {
+      return await this.prisma.account.create({
+        data: {
+          email: 'genz-bot@gmail.com',
+          password: '13123123123123123',
+          aboutMe: 'Tôi là bot',
+          address: 'vu tru',
+          id: '0308051202024GZMTH',
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async createMessageInRoom() {
+    try {
+      return await this.prisma.messages.createMany({
+        data: [
+          {
+            contentText: 'chào bạn',
+            ownerId: '1',
+            roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
+          },
+          {
+            contentText: 'hi',
+            ownerId: '0308051202024GZMTH',
+            roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
+          },
+          {
+            contentText: 'tớ hỏi cậu về genz nhé',
+            ownerId: '1',
+            roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
+          },
+          {
+            contentText: 'vâng bạn hỏi tự nhiên',
+            ownerId: '0308051202024GZMTH',
+            roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
+          },
+          {
+            contentText: 'ko',
+            ownerId: '1',
+            roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }

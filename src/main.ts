@@ -37,7 +37,7 @@ async function bootstrap() {
   fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
 
   SwaggerModule.setup('api', app, document);
-  await app.listen(3000);
+  await app.listen(3003);
 
   if (module.hot) {
     module.hot.accept();
