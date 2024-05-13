@@ -128,9 +128,9 @@ CREATE TABLE `PermisionPost` (
 CREATE TABLE `Image` (
     `id` VARCHAR(191) NOT NULL,
     `path` VARCHAR(191) NOT NULL,
-    `accountId` VARCHAR(191) NOT NULL,
-    `postId` VARCHAR(191) NOT NULL,
-    `typeImageId` VARCHAR(191) NULL,
+    `accountId` VARCHAR(191) NULL,
+    `postId` VARCHAR(191) NULL,
+    `typeImageId` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -293,13 +293,13 @@ ALTER TABLE `Post` ADD CONSTRAINT `Post_accountId_fkey` FOREIGN KEY (`accountId`
 ALTER TABLE `Post` ADD CONSTRAINT `Post_permissionPostId_fkey` FOREIGN KEY (`permissionPostId`) REFERENCES `PermisionPost`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Image` ADD CONSTRAINT `Image_accountId_fkey` FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Image` ADD CONSTRAINT `Image_accountId_fkey` FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Image` ADD CONSTRAINT `Image_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Image` ADD CONSTRAINT `Image_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Image` ADD CONSTRAINT `Image_typeImageId_fkey` FOREIGN KEY (`typeImageId`) REFERENCES `TypeImage`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Image` ADD CONSTRAINT `Image_typeImageId_fkey` FOREIGN KEY (`typeImageId`) REFERENCES `TypeImage`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `PostShare` ADD CONSTRAINT `PostShare_accountId_fkey` FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

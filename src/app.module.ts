@@ -17,6 +17,7 @@ import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
 import { MockDataController } from './mock-data/mock-data.controller';
 import { MockDataModule } from './mock-data/mock-data.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -42,8 +43,9 @@ import { MockDataModule } from './mock-data/mock-data.module';
     FileModule,
     FollowModule,
     MockDataModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
