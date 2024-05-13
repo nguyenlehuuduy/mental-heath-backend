@@ -24,10 +24,10 @@ export class FeatureForGet {
   @ApiProperty({
     required: false,
   })
-  created_at?: Date
+  created_at?: Date;
 
   @ApiProperty({
     required: false,
   })
-  updated_at?: Date
+  updated_at?: Date;
 }

@@ -60,6 +60,19 @@ CREATE TABLE `Messages` (
     `id` VARCHAR(191) NOT NULL,
     `ownerId` VARCHAR(191) NOT NULL,
     `roomId` VARCHAR(191) NOT NULL,
+    `contentMessage` VARCHAR(191) NOT NULL,
+    `typeMessageId` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TypeMessage` (
+    `id` VARCHAR(191) NOT NULL,
+    `nameTypeMessage` VARCHAR(191) NOT NULL,
+    `descriptionTypeMessage` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -82,18 +95,20 @@ CREATE TABLE `RequestFollow` (
     `id` VARCHAR(191) NOT NULL,
     `senderId` VARCHAR(191) NOT NULL,
     `reciverId` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Follower` (
+CREATE TABLE `FollowShip` (
     `id` VARCHAR(191) NOT NULL,
-    `accountId` VARCHAR(191) NOT NULL,
     `followerId` VARCHAR(191) NOT NULL,
     `followingId` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
+    `piority` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -103,6 +118,9 @@ CREATE TABLE `Post` (
     `id` VARCHAR(191) NOT NULL,
     `contentText` VARCHAR(191) NOT NULL,
     `accountId` VARCHAR(191) NOT NULL,
+    `totalReaction` INTEGER NULL,
+    `totalComment` INTEGER NULL,
+    `totalShare` INTEGER NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
     `permissionPostId` VARCHAR(191) NULL,
@@ -160,7 +178,7 @@ CREATE TABLE `Comment` (
     `contentCmt` VARCHAR(191) NOT NULL,
     `accountId` VARCHAR(191) NOT NULL,
     `postId` VARCHAR(191) NOT NULL,
-    `postSharedId` VARCHAR(191) NOT NULL,
+    `postSharedId` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -172,7 +190,7 @@ CREATE TABLE `Reaction` (
     `id` VARCHAR(191) NOT NULL,
     `accountId` VARCHAR(191) NOT NULL,
     `postId` VARCHAR(191) NOT NULL,
-    `postShareId` VARCHAR(191) NOT NULL,
+    `postShareId` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -201,6 +219,40 @@ CREATE TABLE `TypeNotification` (
     `id` VARCHAR(191) NOT NULL,
     `typeName` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Feature` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `thumbnailFileName` VARCHAR(191) NOT NULL,
+    `url` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TabMenu` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `iconUrl` VARCHAR(191) NOT NULL,
+    `url` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `HotContent` (
+    `id` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `thumbnailFileName` VARCHAR(191) NOT NULL,
+    `url` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -236,16 +288,19 @@ ALTER TABLE `Messages` ADD CONSTRAINT `Messages_ownerId_fkey` FOREIGN KEY (`owne
 ALTER TABLE `Messages` ADD CONSTRAINT `Messages_roomId_fkey` FOREIGN KEY (`roomId`) REFERENCES `RoomMessage`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Messages` ADD CONSTRAINT `Messages_typeMessageId_fkey` FOREIGN KEY (`typeMessageId`) REFERENCES `TypeMessage`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `RequestFollow` ADD CONSTRAINT `RequestFollow_senderId_fkey` FOREIGN KEY (`senderId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `RequestFollow` ADD CONSTRAINT `RequestFollow_reciverId_fkey` FOREIGN KEY (`reciverId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Follower` ADD CONSTRAINT `Follower_followerId_fkey` FOREIGN KEY (`followerId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `FollowShip` ADD CONSTRAINT `FollowShip_followerId_fkey` FOREIGN KEY (`followerId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Follower` ADD CONSTRAINT `Follower_followingId_fkey` FOREIGN KEY (`followingId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `FollowShip` ADD CONSTRAINT `FollowShip_followingId_fkey` FOREIGN KEY (`followingId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Post` ADD CONSTRAINT `Post_accountId_fkey` FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -275,7 +330,7 @@ ALTER TABLE `Comment` ADD CONSTRAINT `Comment_accountId_fkey` FOREIGN KEY (`acco
 ALTER TABLE `Comment` ADD CONSTRAINT `Comment_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Comment` ADD CONSTRAINT `Comment_postSharedId_fkey` FOREIGN KEY (`postSharedId`) REFERENCES `PostShare`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Comment` ADD CONSTRAINT `Comment_postSharedId_fkey` FOREIGN KEY (`postSharedId`) REFERENCES `PostShare`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Reaction` ADD CONSTRAINT `Reaction_accountId_fkey` FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -284,7 +339,7 @@ ALTER TABLE `Reaction` ADD CONSTRAINT `Reaction_accountId_fkey` FOREIGN KEY (`ac
 ALTER TABLE `Reaction` ADD CONSTRAINT `Reaction_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Reaction` ADD CONSTRAINT `Reaction_postShareId_fkey` FOREIGN KEY (`postShareId`) REFERENCES `PostShare`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Reaction` ADD CONSTRAINT `Reaction_postShareId_fkey` FOREIGN KEY (`postShareId`) REFERENCES `PostShare`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Notification` ADD CONSTRAINT `Notification_typeNotificationId_fkey` FOREIGN KEY (`typeNotificationId`) REFERENCES `TypeNotification`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

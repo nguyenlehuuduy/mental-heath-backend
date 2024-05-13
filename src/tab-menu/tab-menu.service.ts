@@ -6,7 +6,7 @@ import { TabMenuForUpdate } from './dto/TabMenuForUpdate';
 
 @Injectable()
 export class TabMenuService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
   async createNewTabMenu(tabmenu: TabMenuForPost): Promise<TabMenuForGet> {
     try {
       return this.prismaService.tabMenu.create({
@@ -14,24 +14,27 @@ export class TabMenuService {
           name: tabmenu.name,
           iconUrl: tabmenu.iconUrl,
           url: tabmenu.url,
-        }
-      })
+        },
+      });
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async updateTabMenu(id: string, tabMenuForUpdate: TabMenuForUpdate): Promise<TabMenuForGet> {
+  async updateTabMenu(
+    id: string,
+    tabMenuForUpdate: TabMenuForUpdate,
+  ): Promise<TabMenuForGet> {
     try {
       return this.prismaService.tabMenu.update({
         where: { id },
         data: {
           name: tabMenuForUpdate.name,
           iconUrl: tabMenuForUpdate.iconUrl,
-          url: tabMenuForUpdate.url
-        }
-      })
+          url: tabMenuForUpdate.url,
+        },
+      });
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
@@ -51,8 +54,8 @@ export class TabMenuService {
     try {
       return this.prismaService.tabMenu.delete({
         where: {
-          id
-        }
+          id,
+        },
       });
     } catch (error) {
       console.error(error);

@@ -8,6 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 @Module({
   imports: [CaslModule],
   controllers: [RoleController],
-  providers: [RoleService, PrismaService, JwtService]
+  providers: [RoleService, PrismaService, JwtService],
 })
-export class RoleModule { }
+export class RoleModule {}

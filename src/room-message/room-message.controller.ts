@@ -1,15 +1,13 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
-  Patch,
   Post,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/decorator/role.enum';
 import { RoomMessageForPost } from './dto/RoomMessageForPost';
@@ -17,6 +15,7 @@ import { RoomMessageForGet } from './dto/RoomMessageForGet';
 import { RoomMessageService } from './room-message.service';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
 import { AuthorizationGuard } from 'src/guard/authorization.guard';
+import { SendMessageForPost } from './dto/ContentMessage';
 
 @ApiTags('room-message')
 @Controller('room-message')
@@ -54,5 +53,10 @@ export class RoomMessageController {
   @Get(':id')
   async getInfRoom(@Param('id') id: string) {
     return this.roomMessageService.getInfRoom(id);
+  }
+
+  @Post('/send-message')
+  async sendMessageToRoom(@Request() req, @Body() message: SendMessageForPost) {
+    return await this.roomMessageService.sendMessageToRoom(req?.user, message);
   }
 }

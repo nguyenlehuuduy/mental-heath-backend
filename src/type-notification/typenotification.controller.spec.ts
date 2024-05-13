@@ -9,7 +9,9 @@ describe('TypenotificationController', () => {
       controllers: [TypenotificationController],
     }).compile();
 
-    controller = module.get<TypenotificationController>(TypenotificationController);
+    controller = module.get<TypenotificationController>(
+      TypenotificationController,
+    );
   });
 
   it('should be defined', () => {

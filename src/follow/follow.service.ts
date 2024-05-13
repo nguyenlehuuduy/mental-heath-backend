@@ -1,16 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { retry } from "rxjs";
-import { PrismaService } from "src/prisma/prisma.service";
-import { UserForResponse } from "src/user/dto/UserForResponse";
-import { FollowForCreate } from "./dto/FollowForCreate";
-import { FollowForGet } from "./dto/FollowForGet";
-import { RequestFollowForResponse } from "./dto/RequestFollowForResponse";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserForResponse } from 'src/user/dto/UserForResponse';
+import { FollowForCreate } from './dto/FollowForCreate';
+import { FollowForGet } from './dto/FollowForGet';
+import { RequestFollowForResponse } from './dto/RequestFollowForResponse';
 
 @Injectable()
 export class FollowService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createRequestFollow(follow: FollowForCreate): Promise<FollowForGet | undefined> {
+  async createRequestFollow(
+    follow: FollowForCreate,
+  ): Promise<FollowForGet | undefined> {
     try {
       const existFollowShip = await this.prismaService.followShip.findFirst({
         where: {
@@ -21,12 +22,13 @@ export class FollowService {
       if (existFollowShip) {
         return;
       }
-      const existRequestFollow = await this.prismaService.requestFollow.findFirst({
-        where: {
-          senderId: follow.senderId,
-          reciverId: follow.reciverId,
-        },
-      });
+      const existRequestFollow =
+        await this.prismaService.requestFollow.findFirst({
+          where: {
+            senderId: follow.senderId,
+            reciverId: follow.reciverId,
+          },
+        });
       if (existRequestFollow) {
         return;
       }
@@ -93,25 +95,27 @@ export class FollowService {
       if (existFollowShip) {
         return;
       }
-      return await this.prismaService.followShip.create({
-        data: {
-          followerId: follow.senderId,
-          followingId: follow.reciverId,
-        },
-        select: {
-          id: true,
-          followerId: true,
-          followingId: true,
-        },
-      }).then(async (rs) => {
-        if (rs) {
-          await this.prismaService.requestFollow.delete({
-            where: {
-              id: idRequestFollow,
-            },
-          });
-        }
-      });
+      return await this.prismaService.followShip
+        .create({
+          data: {
+            followerId: follow.senderId,
+            followingId: follow.reciverId,
+          },
+          select: {
+            id: true,
+            followerId: true,
+            followingId: true,
+          },
+        })
+        .then(async (rs) => {
+          if (rs) {
+            await this.prismaService.requestFollow.delete({
+              where: {
+                id: idRequestFollow,
+              },
+            });
+          }
+        });
     } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
@@ -123,7 +127,7 @@ export class FollowService {
         where: { id },
       });
     } catch (error) {
-      throw new HttpException("Not found", HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -145,9 +149,9 @@ export class FollowService {
           },
         },
       });
-      return result.map(item => item.following);
+      return result.map((item) => item.following);
     } catch (error) {
-      throw new HttpException("Not found", HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -169,13 +173,15 @@ export class FollowService {
           },
         },
       });
-      return result.map(item => item.follower);
+      return result.map((item) => item.follower);
     } catch (error) {
-      throw new HttpException("Not found", HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
-  async getAllRequestFollowers(id: string): Promise<Array<RequestFollowForResponse>> {
+  async getAllRequestFollowers(
+    id: string,
+  ): Promise<Array<RequestFollowForResponse>> {
     try {
       return await this.prismaService.requestFollow.findMany({
         where: { reciverId: id },
@@ -197,7 +203,7 @@ export class FollowService {
         },
       });
     } catch (error) {
-      throw new HttpException("Not found", HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 }

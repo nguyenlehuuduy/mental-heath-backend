@@ -1,12 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class FollowForCreate {
+export class SendMessageForPost {
   @ApiProperty()
   @IsNotEmpty()
-  senderId: string;
+  roomId: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  reciverId: string;
+  contentMessage: string;
+
+  @ApiProperty()
+  typeMessageId: string;
 }
