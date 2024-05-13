@@ -35,6 +35,7 @@ import { PostForQuery } from './dto/PostForQuery';
 import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
 import { PostForUpdate } from './dto/PostForUpdate';
 import { PostService } from './post.service';
+import { PostOfAccountForResponse } from './dto/PostForProfile';
 
 @ApiTags('post')
 @Controller('post')
@@ -112,10 +113,33 @@ export class PostController {
     return await this.postService.getValidPostByAccount(req?.user?.id, query);
   }
 
-  @Get('/get-all-post')
+  @Get('/get-posts-account')
   @ApiOkResponse({
-    type: PostForFullResponse,
+    type: PostOfAccountForResponse,
   })
+  @ApiQuery({
+    type: PaginationAndFilter,
+  })
+  async getPostsByAccount(@Request() req, @Query() query: PaginationAndFilter) {
+    const { id } = req?.user;
+    return await this.postService.getPostsByAccount(id, query);
+  }
+
+  @Get('/get-posts-other-account/:id')
+  @ApiOkResponse({
+    type: PostOfAccountForResponse,
+  })
+  @ApiParam({ name: 'id', type: String })
+  @ApiQuery({
+    type: PaginationAndFilter,
+  })
+  async getPostsByOtherAccount(
+    @Param('id') ortherAccountId: string,
+    @Query() query: PaginationAndFilter,
+  ) {
+    return await this.postService.getPostsByAccount(ortherAccountId, query);
+  }
+
   @Get('/:id')
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({

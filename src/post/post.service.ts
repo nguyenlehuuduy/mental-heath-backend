@@ -5,6 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PostOfAccountForResponse } from './dto/PostForProfile';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { ImageUploadForPost, PostForCreate } from './dto/PostForCreate';
 import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
@@ -332,8 +333,13 @@ export class PostService {
               phone: true,
             },
           },
-          created_at: true,
-          updated_at: true,
+          comments: {
+            select: {
+              contentCmt: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
           totalComment: true,
           totalReaction: true,
           totalShare: true,
@@ -344,6 +350,8 @@ export class PostService {
               path: true,
             },
           },
+          created_at: true,
+          updated_at: true,
         },
       });
     } catch (error) {
@@ -351,4 +359,95 @@ export class PostService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
+
+  async getPostsByAccount(
+    accountId: string,
+    query: PaginationAndFilter,
+  ): Promise<Array<PostOfAccountForResponse>> {
+    try {
+      const pagination: PaginationAndFilter = {
+        limit: query.limit > 0 ? query.limit : 5,
+        pageNo: query.pageNo > 0 ? query.pageNo : 1,
+      };
+      const take = Number(pagination.limit);
+      const skip =
+        pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo - 1);
+      const postOfAccount = await this.prismaService.post.findMany({
+        where: {
+          accountId: accountId,
+        },
+        select: {
+          id: true,
+          contentText: true,
+          account: {
+            select: {
+              id: true,
+              fullName: true,
+              avata: true,
+            },
+          },
+          comments: {
+            select: {
+              id: true,
+              account: {
+                select: {
+                  id: true,
+                  avata: true,
+                  fullName: true,
+                },
+              },
+              contentCmt: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          totalComment: true,
+          totalReaction: true,
+          totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+        },
+        skip: skip,
+        take: take,
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      return postOfAccount;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // check đây có phải người mình đang follow ko
+  // async checkFollowing(
+  //   accountId: string,
+  //   followingId: string,
+  // ): Promise<boolean> {
+  //   try {
+  //     const isCheck = await this.prismaService.followShip.findFirst({
+  //       where: {
+  //         followerId: accountId,
+  //         followingId: followingId,
+  //       },
+  //     });
+  //     if (!isCheck) {
+  //       return false;
+  //     } else {
+  //       return true;
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new HttpException(error, HttpStatus.BAD_REQUEST);
+  //   }
+  // }
 }
