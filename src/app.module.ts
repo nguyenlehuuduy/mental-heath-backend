@@ -15,6 +15,9 @@ import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
+import { MockDataController } from './mock-data/mock-data.controller';
+import { MockDataModule } from './mock-data/mock-data.module';
+import { ChatBotModule } from './chat-bot/chat-bot.module';
 
 @Module({
   imports: [
@@ -39,8 +42,10 @@ import { FollowModule } from './follow/follow.module';
     CommentModule,
     FileModule,
     FollowModule,
+    MockDataModule,
+    ChatBotModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

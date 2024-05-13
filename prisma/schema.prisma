@@ -23,6 +23,7 @@ model Account {
   nickName              String?
   birth                 DateTime?
   address               String?
+  avata                 String?
   posts                 Post[]
   followers             FollowShip[]    @relation("Followings")
   followings            FollowShip[]    @relation("Followers")
@@ -71,16 +72,18 @@ model RoomMessage {
   Messages      Messages[]
   created_at    DateTime?  @default(now())
   updated_at    DateTime?  @updatedAt
+  nameRoom      String?
 }
 
 model Messages {
-  id         String      @id @default(uuid())
-  ownerId    String
-  owner      Account     @relation(fields: [ownerId], references: [id])
-  roomId     String
-  room       RoomMessage @relation(fields: [roomId], references: [id])
-  created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
+  id          String      @id @default(uuid())
+  ownerId     String
+  owner       Account     @relation(fields: [ownerId], references: [id])
+  roomId      String
+  room        RoomMessage @relation(fields: [roomId], references: [id])
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  contentText String      @db.Text
 }
 
 model Role {

@@ -1,6 +1,14 @@
-
-
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/decorator/role.enum';
@@ -14,16 +22,15 @@ import { AuthorizationGuard } from 'src/guard/authorization.guard';
 @Controller('room-message')
 @Roles(Role.User)
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
-
 export class RoomMessageController {
-  constructor(private roomMessageService: RoomMessageService) { }
+  constructor(private roomMessageService: RoomMessageService) {}
   @Post()
   @ApiBody({ type: RoomMessageForPost })
   @ApiOkResponse({
     type: RoomMessageForGet,
   })
   async createNewRoomMessage(@Body() room: RoomMessageForPost, @Request() req) {
-    return this.roomMessageService.postRoomMessage(room, req?.user)
+    return this.roomMessageService.postRoomMessage(room, req?.user);
   }
 
   @Get()
@@ -31,6 +38,21 @@ export class RoomMessageController {
     type: [RoomMessageForGet],
   })
   async getAllValidRoomMessage(@Request() req) {
-    return this.roomMessageService.getValidRoomMessage(req?.user)
+    return this.roomMessageService.getValidRoomMessage(req?.user);
+  }
+
+  @Get('chat-bot')
+  async getAllRoomChatBot(@Request() req) {
+    return this.roomMessageService.getRoomChatBot(req?.user);
+  }
+
+  @Get('messages/:id')
+  async getAllMessageInRoom(@Param('id') id: string) {
+    return this.roomMessageService.getAllMessageInRoom(id);
+  }
+
+  @Get(':id')
+  async getInfRoom(@Param('id') id: string) {
+    return this.roomMessageService.getInfRoom(id);
   }
 }
