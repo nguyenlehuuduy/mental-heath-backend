@@ -6,6 +6,7 @@ import { RoomMessageForGet } from './dto/RoomMessageForGet';
 import { RoomChatBotForGet } from './dto/RoomChatBotForGet';
 import { MessageForResponse } from './dto/MessageForResponse';
 import { RoomBotInfForResponse } from './dto/RoomBotInfForResponse';
+import { SendMessageForPost } from './dto/ContentMessage';
 
 @Injectable()
 export class RoomMessageService {
@@ -180,18 +181,32 @@ export class RoomMessageService {
   }
 
   async sendMessageToRoom(
-    roomMessageId: string,
-    contentMessage: string,
-    accountId: string,
-    typeMessageId: string,
-  ): Promise<SendMessageForPost> {
+    account: AccountForToken,
+    message: SendMessageForPost,
+  ): Promise<MessageForResponse> {
     try {
       return await this.prismaService.messages.create({
         data: {
-          ownerId: accountId,
-          roomId: roomMessageId,
-          contentMessage: contentMessage,
-          typeMessageId: typeMessageId,
+          ownerId: account.id,
+          roomId: message.roomId,
+          contentText: message.contentMessage,
+          typeMessageId: message.typeMessageId,
+        },
+        select: {
+          id: true,
+          ownerId: true,
+          owner: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              avata: true,
+            },
+          },
+          contentText: true,
+          roomId: true,
+          created_at: true,
+          updated_at: true,
         },
       });
     } catch (error) {

@@ -76,16 +76,16 @@ model RoomMessage {
 }
 
 model Messages {
-  id            String      @id @default(uuid())
+  id            String       @id @default(uuid())
   ownerId       String
-  owner         Account     @relation(fields: [ownerId], references: [id])
+  owner         Account      @relation(fields: [ownerId], references: [id])
   roomId        String
-  room          RoomMessage @relation(fields: [roomId], references: [id])
-  created_at    DateTime    @default(now())
-  updated_at    DateTime    @updatedAt
-  contentText   String      @db.Text
-  typeMessageId String
-  typeMessage   TypeMessage @relation(fields: [typeMessageId], references: [id])
+  room          RoomMessage  @relation(fields: [roomId], references: [id])
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  contentText   String       @db.Text
+  typeMessageId String?
+  typeMessage   TypeMessage? @relation(fields: [typeMessageId], references: [id])
 }
 
 model TypeMessage {

@@ -4,12 +4,10 @@ import { UserForUpdate } from './dto/UserForUpdate';
 import { UserForResponse } from './dto/UserForResponse';
 import { AdminAccountForPut } from './dto/AdminAccountForPut';
 import { AdminAccountForResponse } from './dto/AdminAccountForResponse';
-import { Prisma } from '@prisma/client';
-import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
   async getDetailUserById(userId: string): Promise<UserForResponse> {
     try {
       const user = await this.prismaService.account.findUnique({
@@ -85,42 +83,45 @@ export class UserService {
     }
   }
 
-  async getSuggestedFollowAccounts(userId: string): Promise<Array<UserForResponse>> {
+  async getSuggestedFollowAccounts(
+    userId: string,
+  ): Promise<Array<UserForResponse>> {
     const infoAccount = await this.prismaService.account.findUnique({
       where: {
         id: userId,
       },
       select: {
-        followings: true
+        followings: true,
       },
     });
     const followingOfMySelf = infoAccount.followings;
     const arrFriendRelative: Array<UserForResponse> = [];
     for (const following of followingOfMySelf) {
-      const followingOfAccountSuggest = await this.prismaService.account.findUnique({
-        where: {
-          id: following.followingId,
-        },
-        select: {
-          id: true,
-          followings: {
-            select: {
-              following: {
-                select: {
-                  fullName: true,
-                  id: true,
-                  aboutMe: true,
-                  address: true,
-                  birth: true,
-                  nickName: true,
-                  phone: true
-                }
-              }
+      const followingOfAccountSuggest =
+        await this.prismaService.account.findUnique({
+          where: {
+            id: following.followingId,
+          },
+          select: {
+            id: true,
+            followings: {
+              select: {
+                following: {
+                  select: {
+                    fullName: true,
+                    id: true,
+                    aboutMe: true,
+                    address: true,
+                    birth: true,
+                    nickName: true,
+                    phone: true,
+                  },
+                },
+              },
+              take: 3,
             },
-            take: 3
-          }
-        }
-      })
+          },
+        });
       for (const suggestAccount of followingOfAccountSuggest.followings) {
         arrFriendRelative.push({
           aboutMe: suggestAccount.following.aboutMe,
@@ -129,12 +130,13 @@ export class UserService {
           fullName: suggestAccount.following.fullName,
           id: suggestAccount.following.id,
           nickName: suggestAccount.following.nickName,
-          phone: suggestAccount.following.phone
-        })
+          phone: suggestAccount.following.phone,
+        });
       }
     }
     return arrFriendRelative;
-  } catch(error) {
+  }
+  catch(error) {
     console.error(error);
     throw new HttpException(error, HttpStatus.BAD_REQUEST);
   }

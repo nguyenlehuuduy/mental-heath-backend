@@ -6,6 +6,6 @@ import { JwtService } from '@nestjs/jwt';
 
 @Module({
   controllers: [RoomMessageController],
-  providers: [RoomMessageService, PrismaService, JwtService]
+  providers: [RoomMessageService, PrismaService, JwtService],
 })
-export class RoomMessageModule { }
+export class RoomMessageModule {}

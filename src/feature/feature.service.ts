@@ -6,7 +6,7 @@ import { FeatureForUpdate } from './dto/FeatureForUpdate';
 
 @Injectable()
 export class FeatureService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
 
   async getAllFeaturesSevice(): Promise<FeatureForGet[]> {
     try {
@@ -17,7 +17,7 @@ export class FeatureService {
           thumbnailFileName: true,
           url: true,
           created_at: true,
-          updated_at: true
+          updated_at: true,
         },
       });
     } catch (error) {
@@ -42,8 +42,8 @@ export class FeatureService {
           thumbnailFileName: true,
           url: true,
           created_at: true,
-          updated_at: true
-        }
+          updated_at: true,
+        },
       });
     } catch (error) {
       console.error(error);
@@ -71,8 +71,8 @@ export class FeatureService {
           thumbnailFileName: true,
           url: true,
           created_at: true,
-          updated_at: true
-        }
+          updated_at: true,
+        },
       });
     } catch (error) {
       console.error(error);

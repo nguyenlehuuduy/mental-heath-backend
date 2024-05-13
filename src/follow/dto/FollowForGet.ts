@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UserForResponse } from "src/user/dto/UserForResponse";
+import { ApiProperty } from '@nestjs/swagger';
+import { UserForResponse } from 'src/user/dto/UserForResponse';
 
 export class FollowForGet {
   @ApiProperty()

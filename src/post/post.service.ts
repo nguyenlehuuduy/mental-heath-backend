@@ -155,8 +155,8 @@ export class PostService {
         },
       });
       const followings = account.followings.map((item) => item.followingId);
-      let dataResponse: Array<PostForResponse> = [];
-      let pagination: PaginationAndFilter = {
+      const dataResponse: Array<PostForResponse> = [];
+      const pagination: PaginationAndFilter = {
         limit: query.limit > 0 ? query.limit : 5,
         pageNo: query.pageNo > 0 ? query.pageNo : 1,
       };

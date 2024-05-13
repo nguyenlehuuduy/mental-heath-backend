@@ -21,10 +21,12 @@ export class TokenService {
     @Inject(forwardRef(() => AuthService))
     private auth: AuthService,
     private jwt: JwtService,
-  ) { }
+  ) {}
 
   public async generateAccessToken(account: AccountForFull): Promise<string> {
-    const rolesInAccount = account.roles?.map(item => item.nameRole as Role).filter(Boolean);
+    const rolesInAccount = account.roles
+      ?.map((item) => item.nameRole as Role)
+      .filter(Boolean);
     const opts = {
       ...BASE_OPTIONS,
       expiresIn: '1d',
@@ -35,13 +37,15 @@ export class TokenService {
       email: account.email,
       fullName: account.fullName,
       id: account.id,
-      roles: rolesInAccount.length > 0 ? rolesInAccount : [Role.User]
+      roles: rolesInAccount.length > 0 ? rolesInAccount : [Role.User],
     };
     return this.jwt.signAsync({ token }, opts);
   }
 
   public async generateRefreshToken(account: AccountForFull): Promise<string> {
-    const rolesInAccount = account.roles.map(item => item.nameRole as Role).filter(Boolean);
+    const rolesInAccount = account.roles
+      .map((item) => item.nameRole as Role)
+      .filter(Boolean);
     const opts = {
       ...BASE_OPTIONS,
       expiresIn: '30d',
@@ -52,7 +56,7 @@ export class TokenService {
       email: account.email,
       fullName: account.fullName,
       id: account.id,
-      roles: rolesInAccount.length > 0 ? rolesInAccount : [Role.User]
+      roles: rolesInAccount.length > 0 ? rolesInAccount : [Role.User],
     };
     return this.jwt.sign({ token }, opts);
   }

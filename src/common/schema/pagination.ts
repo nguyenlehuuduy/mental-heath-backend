@@ -1,33 +1,33 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationAndFilter {
   @ApiProperty({
-    required: false
+    required: false,
   })
   pageNo?: number;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   limit?: number;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   totalPage?: number;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   totalRecord?: number;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   sortBy?: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   orderBy?: string;
 }

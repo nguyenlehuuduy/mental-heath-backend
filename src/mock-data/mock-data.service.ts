@@ -190,26 +190,31 @@ export class MockDataService {
       return await this.prisma.messages.createMany({
         data: [
           {
+            typeMessageId: '123',
             contentText: 'chào bạn',
             ownerId: '1',
             roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
           },
           {
+            typeMessageId: '123',
             contentText: 'hi',
             ownerId: '0308051202024GZMTH',
             roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
           },
           {
+            typeMessageId: '123',
             contentText: 'tớ hỏi cậu về genz nhé',
             ownerId: '1',
             roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
           },
           {
+            typeMessageId: '123',
             contentText: 'vâng bạn hỏi tự nhiên',
             ownerId: '0308051202024GZMTH',
             roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',
           },
           {
+            typeMessageId: '123',
             contentText: 'ko',
             ownerId: '1',
             roomId: '1eac3f5d-7f12-497e-b730-9b003212bd91',

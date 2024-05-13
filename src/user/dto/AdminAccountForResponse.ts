@@ -12,7 +12,7 @@ export class AdminAccountForResponse {
   fullName: string;
 
   @ApiProperty({
-    type: [RoleForGet]
+    type: [RoleForGet],
   })
   @IsNotEmpty()
   roles: Array<RoleForGet>;
@@ -22,5 +22,4 @@ export class AdminAccountForResponse {
 
   @ApiProperty()
   updated_at: Date;
-
 }

@@ -45,7 +45,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) { }
+  ) {}
 
   @Post()
   @ApiBody({ type: PostForCreate })
@@ -116,7 +116,6 @@ export class PostController {
   @ApiOkResponse({
     type: PostForFullResponse,
   })
-
   @Get('/:id')
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({
