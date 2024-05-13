@@ -17,6 +17,7 @@ import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
 import { MockDataController } from './mock-data/mock-data.controller';
 import { MockDataModule } from './mock-data/mock-data.module';
+import { ChatBotModule } from './chat-bot/chat-bot.module';
 import { NotificationModule } from './notification/notification.module';
 import { TypenotificationModule } from './type-notification/typenotification.module';
 
@@ -44,6 +45,7 @@ import { TypenotificationModule } from './type-notification/typenotification.mod
     FileModule,
     FollowModule,
     MockDataModule,
+    ChatBotModule,
     NotificationModule,
     TypenotificationModule,
   ],

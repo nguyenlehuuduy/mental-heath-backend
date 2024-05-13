@@ -309,4 +309,46 @@ export class PostService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
+
+  async getPostDetail(postId: string): Promise<PostForResponse> {
+    try {
+      return await this.prismaService.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          id: true,
+          contentText: true,
+          accountId: true,
+          account: {
+            select: {
+              id: true,
+              email: true,
+              fullName: true,
+              nickName: true,
+              birth: true,
+              address: true,
+              aboutMe: true,
+              phone: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+          totalComment: true,
+          totalReaction: true,
+          totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

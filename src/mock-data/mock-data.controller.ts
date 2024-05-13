@@ -23,4 +23,19 @@ export class MockDataController {
   async MockFollowShip() {
     return this.mockdataService.createFollowShip();
   }
+
+  @Post('/tab-menus')
+  async MockTabMenu() {
+    return this.mockdataService.createTabMenu();
+  }
+
+  @Post('/create-bot')
+  async CreateBotInf() {
+    return this.mockdataService.createBot();
+  }
+
+  @Post('/mock-message-in-room')
+  async createMessageInRoom() {
+    return this.mockdataService.createMessageInRoom();
+  }
 }
