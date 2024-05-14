@@ -15,6 +15,7 @@ import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
+import { PostshareModule } from './postshare/postshare.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { FollowModule } from './follow/follow.module';
     CommentModule,
     FileModule,
     FollowModule,
+    PostshareModule,
   ],
   controllers: [],
   providers: [],
