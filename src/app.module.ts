@@ -19,9 +19,13 @@ import { MockDataModule } from './mock-data/mock-data.module';
 import { ChatBotModule } from './chat-bot/chat-bot.module';
 import { NotificationModule } from './notification/notification.module';
 import { TypenotificationModule } from './type-notification/typenotification.module';
+import { ConfigModule } from '@nestjs/config';
+import { UploadS3Module } from './uploads3/uploads3.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    UploadS3Module,
     AuthModule,
     PrismaModule,
     TokenModule,

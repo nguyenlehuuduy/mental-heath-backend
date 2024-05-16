@@ -9,6 +9,7 @@ CREATE TABLE `Account` (
     `nickName` VARCHAR(191) NULL,
     `birth` DATETIME(3) NULL,
     `address` VARCHAR(191) NULL,
+    `avata` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL,
     `refreshTokenJWT` TEXT NULL,
@@ -51,6 +52,7 @@ CREATE TABLE `RoomMessage` (
     `id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL,
+    `nameRoom` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -60,6 +62,19 @@ CREATE TABLE `Messages` (
     `id` VARCHAR(191) NOT NULL,
     `ownerId` VARCHAR(191) NOT NULL,
     `roomId` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
+    `contentText` TEXT NOT NULL,
+    `typeMessageId` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TypeMessage` (
+    `id` VARCHAR(191) NOT NULL,
+    `nameTypeMessage` VARCHAR(191) NOT NULL,
+    `descriptionTypeMessage` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -206,6 +221,7 @@ CREATE TABLE `TypeNotification` (
     `id` VARCHAR(191) NOT NULL,
     `typeName` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
+    `thumbnailNoti` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -273,6 +289,9 @@ ALTER TABLE `Messages` ADD CONSTRAINT `Messages_ownerId_fkey` FOREIGN KEY (`owne
 
 -- AddForeignKey
 ALTER TABLE `Messages` ADD CONSTRAINT `Messages_roomId_fkey` FOREIGN KEY (`roomId`) REFERENCES `RoomMessage`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Messages` ADD CONSTRAINT `Messages_typeMessageId_fkey` FOREIGN KEY (`typeMessageId`) REFERENCES `TypeMessage`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `RequestFollow` ADD CONSTRAINT `RequestFollow_senderId_fkey` FOREIGN KEY (`senderId`) REFERENCES `Account`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

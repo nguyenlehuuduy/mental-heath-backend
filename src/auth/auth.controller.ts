@@ -4,7 +4,9 @@ import {
   Get,
   Post,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -25,11 +27,16 @@ import { AccountForPost } from './dto/AccountForPost';
 import { AccountForToken } from './dto/AccountForToken';
 import { AccountForFull } from './dto/AccountFull';
 import { LocalAuthGuard } from './local-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadFileServiceS3 } from 'src/uploads3/uploads3.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private uploads3: UploadFileServiceS3,
+  ) {}
 
   @Post('/register')
   @ApiBody({ type: AccountForPost })
@@ -66,5 +73,15 @@ export class AuthController {
   // check permision of account in request and permission in API
   async getProfile(@Request() req) {
     return await this.authService.getProfileAccount(req?.user);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const url = await this.uploads3.uploadFileToPublicBucket('/image/upload', {
+      file,
+      file_name: 'test',
+    });
+    return url;
   }
 }
