@@ -7,10 +7,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { TokenService } from 'src/token/token.service';
 import { TokenModule } from 'src/token/token.module';
 import { CaslModule } from 'src/casl/casl.module';
-import { UploadS3Module } from 'src/uploads3/uploads3.module';
 
 @Module({
-  imports: [forwardRef(() => TokenModule), CaslModule, UploadS3Module],
+  imports: [forwardRef(() => TokenModule), CaslModule],
   controllers: [AuthController],
   providers: [
     AuthService,

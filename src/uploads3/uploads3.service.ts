@@ -19,7 +19,7 @@ export class UploadFileServiceS3 {
     { file, file_name }: { file: Express.Multer.File; file_name: string },
   ) {
     const bucket_name = this.config_service.get('AWS_S3_BUCKET');
-    const key = `${path}/${Date.now().toString()}-${file_name}`;
+    const key = `${path}/${new Date().getTime().toString()}-${file_name.split(' ').join('-')}`;
     await this.s3_client.send(
       new PutObjectCommand({
         Bucket: bucket_name,
@@ -31,6 +31,6 @@ export class UploadFileServiceS3 {
       }),
     );
 
-    return `https://${bucket_name}.s3.amazonaws.com/${key}`;
+    return key;
   }
 }
