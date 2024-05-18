@@ -43,6 +43,17 @@ export class PostForResponse {
   })
   images?: Array<ImagePostForResponse>;
   is_liked?: boolean;
+  @ApiProperty()
+  comment_recent?: Array<{
+    account: {
+      id: string;
+      name: string;
+      nick_name: string;
+      avata: string;
+    };
+    created_at: string;
+    content: string;
+  }>;
 }
 
 export class PostForFullResponse {

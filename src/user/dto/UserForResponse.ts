@@ -35,4 +35,9 @@ export class UserForResponse {
   @IsNotEmpty()
   @IsString()
   address: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  avata?: string;
 }

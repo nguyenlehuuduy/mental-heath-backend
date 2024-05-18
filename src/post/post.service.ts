@@ -163,36 +163,6 @@ export class PostService {
       const take = Number(pagination.limit);
       const skip =
         pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo);
-      const select = {
-        id: true,
-        contentText: true,
-        account: {
-          select: {
-            id: true,
-            fullName: true,
-            phone: true,
-            aboutMe: true,
-            nickName: true,
-            birth: true,
-            address: true,
-          },
-        },
-        created_at: true,
-        updated_at: true,
-        images: {
-          select: {
-            accountId: true,
-            postId: true,
-            path: true,
-          },
-        },
-        totalComment: true,
-        totalShare: true,
-        totalReaction: true,
-        reactions: true,
-        comments: true,
-        postShares: true,
-      };
       const totalRecord = await this.prismaService.post.count({
         where: {
           accountId: {
@@ -213,7 +183,54 @@ export class PostService {
         orderBy: {
           created_at: 'desc',
         },
-        select: select,
+        select: {
+          id: true,
+          contentText: true,
+          account: {
+            select: {
+              id: true,
+              fullName: true,
+              phone: true,
+              aboutMe: true,
+              nickName: true,
+              birth: true,
+              address: true,
+              avata: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+          totalComment: true,
+          totalShare: true,
+          totalReaction: true,
+          reactions: true,
+          postShares: true,
+          comments: {
+            select: {
+              account: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                  avata: true,
+                },
+              },
+              created_at: true,
+              contentCmt: true,
+            },
+            take: 3,
+            orderBy: {
+              created_at: 'desc',
+            },
+          },
+        },
         skip: skip,
         take: take,
       });
@@ -233,6 +250,19 @@ export class PostService {
           totalReaction: item.reactions.length ?? 0,
           totalShare: item.postShares.length ?? 0,
           updated_at: item.updated_at,
+          comment_recent:
+            item.comments.map((item) => {
+              return {
+                account: {
+                  avata: item.account.avata,
+                  id: item.account.id,
+                  name: item.account.fullName,
+                  nick_name: item.account.nickName,
+                },
+                content: item.contentCmt,
+                created_at: String(item.created_at),
+              };
+            }) ?? [],
         });
       }
       return {

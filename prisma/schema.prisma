@@ -129,7 +129,7 @@ model FollowShip {
 
 model Post {
   id               String         @id @default(uuid())
-  contentText      String
+  contentText      String         @db.Text
   accountId        String
   totalReaction    Int?
   totalComment     Int?
