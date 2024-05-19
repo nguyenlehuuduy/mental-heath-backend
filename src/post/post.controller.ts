@@ -112,10 +112,6 @@ export class PostController {
     return await this.postService.getValidPostByAccount(req?.user?.id, query);
   }
 
-  @Get('/get-all-post')
-  @ApiOkResponse({
-    type: PostForFullResponse,
-  })
   @Get('/:id')
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({
@@ -125,8 +121,12 @@ export class PostController {
     return await this.postService.getPostDetail(id);
   }
 
+  @Get('/admin/get-all-post')
+  @ApiOkResponse({
+    type: PostForFullResponse,
+  })
   @Roles(Role.Admin)
   async getAllPost(@Query() query: PostForQuery) {
-    return this.postService.getAllPost(query);
+    return await this.postService.getAllPost(query);
   }
 }
