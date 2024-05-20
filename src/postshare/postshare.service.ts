@@ -33,10 +33,10 @@ export class PostshareService {
   }
 
 
-  async getPostshareByUserId(id: string) {
+  async getPostshareByUserId(id: string, account: AccountForToken) {
     try {
       return await this.prismaService.postShare.findMany({
-        where: { accountId: id },
+        where: { accountId: account.id },
         select: {
           id: true,
           content: true,
@@ -59,8 +59,7 @@ export class PostshareService {
           id
         },
         data: {
-          content: postshareForUpdate.content,
-          postId: postshareForUpdate.postId,
+          content: postshareForUpdate.content
         },
       });
     } catch (error) {
