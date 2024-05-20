@@ -8,6 +8,6 @@ import { CaslModule } from 'src/casl/casl.module';
 @Module({
   imports: [CaslModule],
   controllers: [TabMenuController],
-  providers: [TabMenuService, JwtService, PrismaService]
+  providers: [TabMenuService, JwtService, PrismaService],
 })
-export class TabMenuModule { }
+export class TabMenuModule {}

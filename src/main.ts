@@ -9,7 +9,7 @@ const fs = require('fs');
 
 declare const module: any;
 async function bootstrap() {
-  dotenv.config();
+  dotenv.config({ path: `.env.local`, override: true });
   const app = await NestFactory.create(AppModule, { cors: true });
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -37,7 +37,7 @@ async function bootstrap() {
   fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
 
   SwaggerModule.setup('api', app, document);
-  await app.listen(3000);
+  await app.listen(3003);
 
   if (module.hot) {
     module.hot.accept();

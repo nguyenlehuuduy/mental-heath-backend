@@ -1,5 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RoleForPost } from './dto/RoleForPost';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
 import { AuthorizationGuard } from 'src/guard/authorization.guard';
@@ -14,13 +29,13 @@ import { RoleForGet } from './dto/RoleForGet';
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Roles(Role.User)
 export class RoleController {
-  constructor(private roleService: RoleService) { }
+  constructor(private roleService: RoleService) {}
   @Get()
   @ApiOkResponse({
     type: [RoleForGet],
   })
   async getAllRoles() {
-    return await this.roleService.getAllRoles()
+    return await this.roleService.getAllRoles();
   }
 
   @Post()
@@ -32,21 +47,32 @@ export class RoleController {
     return await this.roleService.addNewRole(roleForPost);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiBody({ type: RoleForPost })
   @ApiOkResponse({
     type: RoleForGet,
   })
-  @ApiParam({ name: "id", required: true, description: "this is id of one role" })
-  async updateOneRole(@Param('id') id: string, @Body() roleForUpdate: RoleForPost) {
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'this is id of one role',
+  })
+  async updateOneRole(
+    @Param('id') id: string,
+    @Body() roleForUpdate: RoleForPost,
+  ) {
     return await this.roleService.updateOneRole(id, roleForUpdate);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiOkResponse({
     type: RoleForGet,
   })
-  @ApiParam({ name: "id", required: true, description: "this is id of one role" })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'this is id of one role',
+  })
   async deleteOneRole(@Param('id') idRole: string) {
     return await this.roleService.deleteOneRule(idRole);
   }

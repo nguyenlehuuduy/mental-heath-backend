@@ -1,18 +1,18 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class HotContentForUpdate {
   @ApiProperty({
-    required: false
+    required: false,
   })
   title?: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   thumbnailFileName?: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   url?: string;
 }

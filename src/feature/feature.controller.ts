@@ -25,7 +25,7 @@ import { AuthorizationGuard } from 'src/guard/authorization.guard';
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Roles(Role.User)
 export class FeatureController {
-  constructor(private readonly featureService: FeatureService) { }
+  constructor(private readonly featureService: FeatureService) {}
   @Post()
   @ApiBody({ type: FeatureForPost })
   @ApiOkResponse({

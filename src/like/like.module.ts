@@ -8,6 +8,6 @@ import { CaslModule } from 'src/casl/casl.module';
 @Module({
   imports: [CaslModule],
   controllers: [LikeController],
-  providers: [LikeService,PrismaService, JwtService],
+  providers: [LikeService, PrismaService, JwtService],
 })
-export class LikeModule { }
+export class LikeModule {}

@@ -1,9 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { AccountForToken } from "src/auth/dto/AccountForToken";
-import { PrismaService } from "src/prisma/prisma.service";
-import { CommentForCreate } from "./dto/CommentForCreate";
-import { CommentForResponse } from "./dto/CommentForResponse";
-import { CommentForUpdate } from "./dto/CommentForUpdate";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CommentForCreate } from './dto/CommentForCreate';
+import { CommentForResponse } from './dto/CommentForResponse';
+import { CommentForUpdate } from './dto/CommentForUpdate';
 
 @Injectable()
 export class CommentService {

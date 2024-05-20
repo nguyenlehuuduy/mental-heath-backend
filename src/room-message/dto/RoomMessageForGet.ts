@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
-import { AccountForToken } from "src/auth/dto/AccountForToken";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
 
 export class RoomMessageForGet {
   @ApiProperty()

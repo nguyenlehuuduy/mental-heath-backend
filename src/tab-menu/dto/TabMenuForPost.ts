@@ -1,18 +1,18 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class TabMenuForPost {
   @ApiProperty({
-    required: false
+    required: false,
   })
   name?: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   iconUrl?: string;
 
   @ApiProperty({
-    required: false
+    required: false,
   })
   url?: string;
 }

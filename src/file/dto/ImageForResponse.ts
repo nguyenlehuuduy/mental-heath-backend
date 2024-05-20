@@ -15,7 +15,7 @@ export class ImageForResponse {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  size: string;
+  size: number;
 
   @ApiProperty()
   @IsNotEmpty()
