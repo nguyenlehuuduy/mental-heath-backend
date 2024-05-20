@@ -25,9 +25,8 @@ export class PostshareController {
   }
 
   @Get(":id")
-  async getPostshareByUserId(@Param(":id") id: string,
-    @Request() req) {
-    return await this.postshareService.getPostshareByUserId(id, req?.user)
+  async getPostshareByUserId(@Param(":id") id: string) {
+    return await this.postshareService.getPostshareByUserId(id)
   }
 
   @Patch("/:id")
