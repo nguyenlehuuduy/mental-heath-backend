@@ -54,6 +54,37 @@ export class PostForResponse {
     created_at: string;
     content: string;
   }>;
+  all_comment?: Array<{
+    account: {
+      id: string;
+      name: string;
+      nick_name: string;
+      avata: string;
+    };
+    created_at: string;
+    updated_at: string;
+    content: string;
+  }>;
+  all_like_info?: Array<{
+    account: {
+      id: string;
+      name: string;
+      nick_name: string;
+      avata: string;
+    };
+    created_at: string;
+    updated_at: string;
+  }>;
+  all_share_info?: Array<{
+    account: {
+      id: string;
+      name: string;
+      nick_name: string;
+      avata: string;
+    };
+    created_at: string;
+    updated_at: string;
+  }>;
 }
 
 export class PostForFullResponse {

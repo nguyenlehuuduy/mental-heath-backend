@@ -388,7 +388,7 @@ export class PostService {
 
   async getPostDetail(postId: string): Promise<PostForResponse> {
     try {
-      return await this.prismaService.post.findUnique({
+      const result = await this.prismaService.post.findUnique({
         where: {
           id: postId,
         },
@@ -410,9 +410,49 @@ export class PostService {
           },
           created_at: true,
           updated_at: true,
-          totalComment: true,
-          totalReaction: true,
-          totalShare: true,
+          reactions: {
+            select: {
+              account: {
+                select: {
+                  avata: true,
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                },
+              },
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          comments: {
+            select: {
+              account: {
+                select: {
+                  avata: true,
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                },
+              },
+              contentCmt: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          postShares: {
+            select: {
+              account: {
+                select: {
+                  avata: true,
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                },
+              },
+              created_at: true,
+              updated_at: true,
+            },
+          },
           images: {
             select: {
               accountId: true,
@@ -422,6 +462,50 @@ export class PostService {
           },
         },
       });
+
+      return {
+        ...result,
+        totalComment: result.comments.length ?? 0,
+        totalShare: result.postShares.length ?? 0,
+        totalReaction: result.reactions.length ?? 0,
+        all_comment: result.comments.map((item) => {
+          return {
+            account: {
+              avata: item.account.avata,
+              id: item.account.id,
+              name: item.account.fullName,
+              nick_name: item.account.nickName,
+            },
+            content: item.contentCmt,
+            created_at: String(item.created_at),
+            updated_at: String(item.updated_at),
+          };
+        }),
+        all_like_info: result.reactions.map((item) => {
+          return {
+            account: {
+              avata: item.account.avata,
+              id: item.account.id,
+              name: item.account.fullName,
+              nick_name: item.account.nickName,
+            },
+            created_at: String(item.created_at),
+            updated_at: String(item.updated_at),
+          };
+        }),
+        all_share_info: result.postShares.map((item) => {
+          return {
+            account: {
+              avata: item.account.avata,
+              id: item.account.id,
+              name: item.account.fullName,
+              nick_name: item.account.nickName,
+            },
+            created_at: String(item.created_at),
+            updated_at: String(item.updated_at),
+          };
+        }),
+      };
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
