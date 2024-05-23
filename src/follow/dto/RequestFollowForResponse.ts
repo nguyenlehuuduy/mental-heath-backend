@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
-import { UserForResponse } from "src/user/dto/UserForResponse";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
+import { UserForResponse } from 'src/user/dto/UserForResponse';
 
 export class RequestFollowForResponse {
   @ApiProperty()

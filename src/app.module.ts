@@ -15,12 +15,19 @@ import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
-import { MockDataController } from './mock-data/mock-data.controller';
+import { PostshareModule } from './postshare/postshare.module';
 import { MockDataModule } from './mock-data/mock-data.module';
+import { ChatBotModule } from './chat-bot/chat-bot.module';
+import { NotificationModule } from './notification/notification.module';
+import { TypenotificationModule } from './type-notification/typenotification.module';
+import { ConfigModule } from '@nestjs/config';
+import { UploadS3Module } from './uploads3/uploads3.module';
 import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    UploadS3Module,
     AuthModule,
     PrismaModule,
     TokenModule,
@@ -42,7 +49,11 @@ import { SearchModule } from './search/search.module';
     CommentModule,
     FileModule,
     FollowModule,
+    PostshareModule,
     MockDataModule,
+    ChatBotModule,
+    NotificationModule,
+    TypenotificationModule,
     SearchModule,
   ],
   controllers: [],

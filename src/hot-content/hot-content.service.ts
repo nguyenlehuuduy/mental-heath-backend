@@ -4,11 +4,12 @@ import { HotContentForResponse } from './dto/HotContentForResponse';
 import { HotContentForPost } from './dto/HotContentForPost';
 import { HotContentForUpdate } from './dto/HotContentForUpdate';
 
-
 @Injectable()
 export class HotContentService {
-  constructor(private prismaService: PrismaService) { }
-  async createHotContent(hotContentForPost: HotContentForPost): Promise<HotContentForResponse> {
+  constructor(private prismaService: PrismaService) {}
+  async createHotContent(
+    hotContentForPost: HotContentForPost,
+  ): Promise<HotContentForResponse> {
     try {
       return await this.prismaService.hotContent.create({
         data: {
@@ -23,7 +24,7 @@ export class HotContentService {
           url: true,
           created_at: true,
           updated_at: true,
-        }
+        },
       });
     } catch (error) {
       console.error(error);
@@ -42,7 +43,10 @@ export class HotContentService {
     }
   }
 
-  async updateHotContent(id: string, hotContentForUpdate: HotContentForUpdate): Promise<HotContentForResponse> {
+  async updateHotContent(
+    id: string,
+    hotContentForUpdate: HotContentForUpdate,
+  ): Promise<HotContentForResponse> {
     try {
       return await this.prismaService.hotContent.update({
         where: { id },
@@ -58,7 +62,7 @@ export class HotContentService {
           url: true,
           created_at: true,
           updated_at: true,
-        }
+        },
       });
     } catch (error) {
       console.error(error);
@@ -85,7 +89,7 @@ export class HotContentService {
           title: true,
           thumbnailFileName: true,
           url: true,
-        }
+        },
       });
     } catch (error) {
       console.error(error);

@@ -1,12 +1,19 @@
-import { BadRequestException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from "bcrypt";
-import { PrismaService } from "src/prisma/prisma.service";
-import { TokenService } from "src/token/token.service";
-import { AccountForLoginResponse } from "./dto/AccountForLoginResponse";
-import { AccountForPost } from "./dto/AccountForPost";
-import { AccountForToken } from "./dto/AccountForToken";
-import { AccountForFull } from "./dto/AccountFull";
+import {
+  BadRequestException,
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { TokenService } from 'src/token/token.service';
+import { AccountForLoginResponse } from './dto/AccountForLoginResponse';
+import { AccountForPost } from './dto/AccountForPost';
+import { AccountForToken } from './dto/AccountForToken';
+import { AccountForFull } from './dto/AccountFull';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +30,7 @@ export class AuthService {
         where: { email: email },
       });
       if (accountExists) {
-        throw new HttpException("Email đã tồn tại.", HttpStatus.CONFLICT);
+        throw new HttpException('Email đã tồn tại.', HttpStatus.CONFLICT);
       }
       const lenghHashPassword = 10;
       const hashPassword = await bcrypt.hash(password, lenghHashPassword);
@@ -37,7 +44,7 @@ export class AuthService {
           roles: true,
         },
       });
-      console.log("step2: done !");
+      console.log('step2: done !');
       return account;
     } catch (error) {
       console.log(error);
@@ -72,10 +79,11 @@ export class AuthService {
   async login(account: AccountForFull): Promise<AccountForLoginResponse> {
     if (!account.refreshTokenJWT) {
       // create a new refreshToken
-      const refreshToken = await this.tokenService.generateRefreshToken(account);
+      const refreshToken =
+        await this.tokenService.generateRefreshToken(account);
       // save in account db
-      refreshToken
-        && (await this.prismaService.account.update({
+      refreshToken &&
+        (await this.prismaService.account.update({
           where: { id: account.id },
           data: {
             refreshTokenJWT: refreshToken,
@@ -83,32 +91,33 @@ export class AuthService {
         }));
       // create a new AT by RT and save in sessionAccount.db
       const accessToken = await this.tokenService.generateAccessToken(account);
-      accessToken
-        && (await this.prismaService.sessionAccount.create({
+      accessToken &&
+        (await this.prismaService.sessionAccount.create({
           data: {
             accessTokenJWT: accessToken,
             refreshTokenJWT: refreshToken,
           },
         }));
-      console.log("first login in one RT, login successfully!");
+      console.log('first login in one RT, login successfully!');
       return {
         access_token: accessToken,
         idAccount: account.id,
       };
     } else {
       // generate AT by RT
-      const accessToken = await this.tokenService.createAccessTokenFromRefreshToken(
-        account.refreshTokenJWT,
-      );
+      const accessToken =
+        await this.tokenService.createAccessTokenFromRefreshToken(
+          account.refreshTokenJWT,
+        );
       // save AT by RT in db
-      accessToken
-        && (await this.prismaService.sessionAccount.create({
+      accessToken &&
+        (await this.prismaService.sessionAccount.create({
           data: {
             accessTokenJWT: accessToken.token,
             refreshTokenJWT: account.refreshTokenJWT,
           },
         }));
-      console.log("another session login, login successfully!");
+      console.log('another session login, login successfully!');
       return {
         access_token: accessToken.token,
         idAccount: account.id,
@@ -133,16 +142,16 @@ export class AuthService {
       });
       return result;
     } catch (error) {
-      throw new BadRequestException("Request Failure");
+      throw new BadRequestException('Request Failure');
     }
   }
 
   async checkIsLogin(req: Request): Promise<any> {
     try {
       if (!req.headers) {
-        throw new BadRequestException("Cookie not found");
+        throw new BadRequestException('Cookie not found');
       }
-      const access_token = req.headers["authorization"].split(" ")[1];
+      const access_token = req.headers['authorization'].split(' ')[1];
       const decodedToken = this.jwtService.verify(access_token, {
         secret: process.env.JWT_SECRET,
       });
@@ -152,7 +161,7 @@ export class AuthService {
       });
     } catch (error) {
       console.log(error);
-      throw new BadRequestException("Cookie has expired");
+      throw new BadRequestException('Cookie has expired');
     }
   }
 
@@ -169,7 +178,7 @@ export class AuthService {
       });
     } catch (error) {
       console.log(error);
-      throw new BadRequestException("request failure");
+      throw new BadRequestException('request failure');
     }
   }
 
@@ -186,11 +195,12 @@ export class AuthService {
           address: true,
           nickName: true,
           phone: true,
+          avata: true,
         },
       });
     } catch (error) {
       console.error();
-      throw new BadRequestException("Cookie has expired");
+      throw new BadRequestException('Cookie has expired');
     }
   }
 }

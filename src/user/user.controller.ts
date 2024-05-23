@@ -1,20 +1,38 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Patch, Request, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { AccountForToken } from "src/auth/dto/AccountForToken";
-import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory/casl-ability.factory";
-import { Role } from "src/decorator/role.enum";
-import { Roles } from "src/decorator/roles.decorator";
-import { AuthenticationGuard } from "src/guard/authentication.guard";
-import { AuthorizationGuard } from "src/guard/authorization.guard";
-import { AdminAccountForPut } from "./dto/AdminAccountForPut";
-import { AdminAccountForResponse } from "./dto/AdminAccountForResponse";
-import { UserForResponse } from "./dto/UserForResponse";
-import { UserForUpdate } from "./dto/UserForUpdate";
-import { UserService } from "./user.service";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import {
+  Action,
+  CaslAbilityFactory,
+} from 'src/casl/casl-ability.factory/casl-ability.factory';
+import { Role } from 'src/decorator/role.enum';
+import { Roles } from 'src/decorator/roles.decorator';
+import { AuthenticationGuard } from 'src/guard/authentication.guard';
+import { AuthorizationGuard } from 'src/guard/authorization.guard';
+import { AdminAccountForPut } from './dto/AdminAccountForPut';
+import { AdminAccountForResponse } from './dto/AdminAccountForResponse';
+import { UserForResponse } from './dto/UserForResponse';
+import { UserForUpdate } from './dto/UserForUpdate';
+import { UserService } from './user.service';
 
-@ApiTags("user")
-@Controller("user")
-@ApiBearerAuth("Authorization")
+@ApiTags('user')
+@Controller('user')
+@ApiBearerAuth('Authorization')
 @Roles(Role.User)
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class UserController {
@@ -23,7 +41,7 @@ export class UserController {
     private caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
-  @Patch("/update-account-admin")
+  @Patch('/update-account-admin')
   @ApiOkResponse({
     type: AdminAccountForResponse,
   })
@@ -36,7 +54,7 @@ export class UserController {
     );
   }
 
-  @Get("/suggest-follow")
+  @Get('/suggest-follow')
   @ApiOkResponse({
     type: [UserForResponse],
   })
@@ -44,14 +62,14 @@ export class UserController {
     return await this.userService.getSuggestedFollowAccounts(req?.user?.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiBody({ type: UserForUpdate })
   @ApiOkResponse({
     type: UserForResponse,
   })
   async updateUser(
     @Body() userInfoRequest: UserForUpdate,
-    @Param("id") userId: string,
+    @Param('id') userId: string,
     @Request() req,
   ) {
     try {
@@ -65,7 +83,7 @@ export class UserController {
         return await this.userService.updateUser(userInfoRequest);
       }
       throw new HttpException(
-        "You are not allowed to update this",
+        'You are not allowed to update this',
         HttpStatus.FORBIDDEN,
       );
     } catch (error) {

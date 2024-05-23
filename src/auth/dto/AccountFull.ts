@@ -10,7 +10,6 @@ export class AccountForFull {
   @ApiProperty({
     type: String,
   })
-
   @IsNotEmpty()
   fullName: string;
 
@@ -64,7 +63,7 @@ export class AccountForFull {
   @ApiProperty({
     type: [RoleForGet],
   })
-  roles: Array<RoleForGet>
+  roles: Array<RoleForGet>;
   @ApiProperty({
     type: Date,
   })
