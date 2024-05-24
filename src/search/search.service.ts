@@ -1,14 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AccountSearchForRespon } from './dto/AccountSearchForRespon';
-import { ContentSearchForRespon } from './dto/ContentSearchForRespon';
+import { AccountSearchForResponse } from './dto/AccountSearchForResponse';
+import { ContentSearchForResponse } from './dto/ContentSearchForResponse';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
 
 @Injectable()
 export class SearchService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   async searchAccountsService(
     keyword: string,
-  ): Promise<Array<AccountSearchForRespon>> {
+  ): Promise<Array<AccountSearchForResponse>> {
     try {
       const regex = new RegExp(keyword, 'i');
       const accounts = await this.prismaService.account.findMany({
@@ -32,28 +33,9 @@ export class SearchService {
           aboutMe: true,
           nickName: true,
           address: true,
-          images: {
-            where: {
-              typeImage: {
-                typeImageName: 'avatar',
-              },
-            },
-            select: {
-              id: true,
-              path: true,
-              typeImage: {
-                select: {
-                  id: true,
-                  typeImageName: true,
-                },
-              },
-            },
-          },
+          avata: true
         },
       });
-      if (accounts.length === 0) {
-        throw new HttpException('No accounts found', HttpStatus.NOT_FOUND);
-      }
       return accounts;
     } catch (error) {
       console.error(error);
@@ -63,67 +45,48 @@ export class SearchService {
 
   async searchPostsService(
     keyword: string,
-  ): Promise<Array<ContentSearchForRespon>> {
+    account: AccountForToken
+  ): Promise<Array<ContentSearchForResponse>> {
     try {
       const regex = new RegExp(keyword, 'i');
       const posts = await this.prismaService.post.findMany({
         where: {
-          OR: [
-            {
-              contentText: {
-                contains: regex.source,
-              },
-            },
-          ],
+          contentText: {
+            contains: regex.source,
+          },
+          account: {
+            followers: {
+              some: {
+                followingId: account.id
+              }
+            }
+          }
         },
         select: {
           id: true,
           contentText: true,
-          accountId: true,
           account: {
             select: {
               fullName: true,
-              images: {
-                where: {
-                  typeImage: {
-                    typeImageName: 'avatar',
-                  },
-                },
-                select: {
-                  id: true,
-                  path: true,
-                  typeImage: {
-                    select: {
-                      id: true,
-                      typeImageName: true,
-                    },
-                  },
-                },
-              },
+              id: true,
+              avata: true,
             },
           },
-          totalReaction: true,
-          totalComment: true,
-          totalShare: true,
           images: {
-            where: {
-              typeImage: {
-                typeImageName: 'post',
-              },
-            },
             select: {
-              accountId: true,
-              postId: true,
-              path: true,
+              path: true
             },
+            take: 1
+          },
+          permissionPost: {
+            where: {
+              code: { not: "private" }
+            }
           },
           created_at: true,
           updated_at: true,
         },
       });
-      if (posts.length === 0) {
-        throw new HttpException('No posts found', HttpStatus.NOT_FOUND);
-      }
       return posts;
     } catch (error) {
       console.error(error);

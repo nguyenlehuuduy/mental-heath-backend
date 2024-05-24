@@ -23,6 +23,7 @@ import { TypenotificationModule } from './type-notification/typenotification.mod
 import { ConfigModule } from '@nestjs/config';
 import { UploadS3Module } from './uploads3/uploads3.module';
 import { SearchModule } from './search/search.module';
+import { PermissionPostModule } from './permission-post/permission-post.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { SearchModule } from './search/search.module';
     NotificationModule,
     TypenotificationModule,
     SearchModule,
+    PermissionPostModule,
   ],
   controllers: [],
   providers: [],

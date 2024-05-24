@@ -1,12 +1,13 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/decorator/role.enum';
 import { Roles } from 'src/decorator/roles.decorator';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
 import { AuthorizationGuard } from 'src/guard/authorization.guard';
 import { SearchService } from './search.service';
-import { AccountSearchForRespon } from './dto/AccountSearchForRespon';
-import { ContentSearchForRespon } from './dto/ContentSearchForRespon';
+import { AccountSearchForResponse } from './dto/AccountSearchForResponse';
+import { ContentSearchForResponse } from './dto/ContentSearchForResponse';
+import { AccountForToken } from 'src/auth/dto/AccountForToken';
 
 @ApiTags('search')
 @Controller('search')
@@ -14,16 +15,16 @@ import { ContentSearchForRespon } from './dto/ContentSearchForRespon';
 @Roles(Role.User)
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class SearchController {
-  constructor(private searchService: SearchService) {}
+  constructor(private searchService: SearchService) { }
   @Get('accounts')
-  @ApiBody({ type: AccountSearchForRespon })
+  @ApiBody({ type: AccountSearchForResponse })
   async searchAccounts(@Query('keyword') keyword: string) {
     return await this.searchService.searchAccountsService(keyword);
   }
 
   @Get('posts')
-  @ApiBody({ type: ContentSearchForRespon })
-  async searchPosts(@Query('keyword') keyword: string) {
-    return await this.searchService.searchPostsService(keyword);
+  @ApiBody({ type: ContentSearchForResponse })
+  async searchPosts(@Query('keyword') keyword: string, @Request() account: AccountForToken) {
+    return await this.searchService.searchPostsService(keyword, account);
   }
 }

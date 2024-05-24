@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { ImageForAvt } from './ImageForAvt';
 
-export class AccountSearchForRespon {
+export class AccountSearchForResponse {
   @ApiProperty()
   @IsNotEmpty()
   id: string;
@@ -26,9 +25,5 @@ export class AccountSearchForRespon {
   @IsNotEmpty()
   @IsString()
   address: string;
-
-  @ApiProperty({
-    type: [ImageForAvt],
-  })
-  images?: Array<ImageForAvt>;
+  avata: string;
 }
