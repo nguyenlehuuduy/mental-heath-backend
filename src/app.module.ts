@@ -22,6 +22,8 @@ import { NotificationModule } from './notification/notification.module';
 import { TypenotificationModule } from './type-notification/typenotification.module';
 import { ConfigModule } from '@nestjs/config';
 import { UploadS3Module } from './uploads3/uploads3.module';
+import { SearchModule } from './search/search.module';
+import { PermissionPostModule } from './permission-post/permission-post.module';
 
 @Module({
   imports: [
@@ -53,8 +55,10 @@ import { UploadS3Module } from './uploads3/uploads3.module';
     ChatBotModule,
     NotificationModule,
     TypenotificationModule,
+    SearchModule,
+    PermissionPostModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

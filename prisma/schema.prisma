@@ -155,9 +155,9 @@ model PermisionPost {
 model Image {
   id          String     @id @default(uuid())
   path        String
-  accountId   String
+  accountId   String?
   postId      String?
-  account     Account    @relation(fields: [accountId], references: [id])
+  account     Account?   @relation(fields: [accountId], references: [id])
   post        Post?      @relation(fields: [postId], references: [id])
   typeImage   TypeImage? @relation(fields: [typeImageId], references: [id])
   typeImageId String?
