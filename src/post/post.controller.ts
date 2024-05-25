@@ -113,9 +113,6 @@ export class PostController {
   }
 
   @Get('/get-posts-account')
-  @ApiOkResponse({
-    type: PostOfAccountForResponse,
-  })
   @ApiQuery({
     type: PaginationAndFilter,
   })
@@ -125,9 +122,6 @@ export class PostController {
   }
 
   @Get('/get-posts-other-account/:id')
-  @ApiOkResponse({
-    type: PostOfAccountForResponse,
-  })
   @ApiParam({ name: 'id', type: String })
   @ApiQuery({
     type: PaginationAndFilter,

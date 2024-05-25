@@ -11,6 +11,7 @@ import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
 import { PostForUpdate } from './dto/PostForUpdate';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
 import { PostForQuery } from './dto/PostForQuery';
+import { PostOfAccountForResponse } from './dto/PostForProfile';
 
 @Injectable()
 export class PostService {
