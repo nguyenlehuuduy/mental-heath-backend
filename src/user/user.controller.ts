@@ -16,11 +16,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { AccountForToken } from 'src/auth/dto/AccountForToken';
-import {
-  Action,
-  CaslAbilityFactory,
-} from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { Role } from 'src/decorator/role.enum';
 import { Roles } from 'src/decorator/roles.decorator';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
@@ -40,8 +35,7 @@ import { Profile } from './dto/ProfileResponse';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private caslAbilityFactory: CaslAbilityFactory,
-  ) {}
+  ) { }
 
   @Patch('/update-account-admin')
   @ApiOkResponse({
@@ -86,6 +80,7 @@ export class UserController {
     const { id } = req?.user;
     return await this.userService.getDetailUserById(id);
   }
+
   @Get('/other-account-profile/:id')
   @ApiBody({ type: Profile })
   @ApiOkResponse({

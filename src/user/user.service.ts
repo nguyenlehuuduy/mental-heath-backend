@@ -8,7 +8,7 @@ import { Profile } from './dto/ProfileResponse';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   async getDetailUserById(id: string): Promise<{
     user: Profile;
     followerCount: number;
@@ -166,58 +166,61 @@ export class UserService {
   async getSuggestedFollowAccounts(
     userId: string,
   ): Promise<Array<UserForResponse>> {
-    const infoAccount = await this.prismaService.account.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        followings: true,
-      },
-    });
-    const followingOfMySelf = infoAccount.followings;
-    const arrFriendRelative: Array<UserForResponse> = [];
-    for (const following of followingOfMySelf) {
-      const followingOfAccountSuggest =
-        await this.prismaService.account.findUnique({
-          where: {
-            id: following.followingId,
-          },
-          select: {
-            id: true,
-            followings: {
-              select: {
-                following: {
-                  select: {
-                    id: true,
-                    fullName: true,
-                    aboutMe: true,
-                    address: true,
-                    birth: true,
-                    nickName: true,
-                    phone: true,
+    try {
+      const infoAccount = await this.prismaService.account.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          followings: true,
+        },
+      });
+      const followingOfMySelf = infoAccount.followings;
+      const arrFriendRelative: Array<UserForResponse> = [];
+      for (const following of followingOfMySelf) {
+        const followingOfAccountSuggest =
+          await this.prismaService.account.findUnique({
+            where: {
+              id: following.followingId,
+            },
+            select: {
+              id: true,
+              followings: {
+                select: {
+                  following: {
+                    select: {
+                      id: true,
+                      fullName: true,
+                      aboutMe: true,
+                      address: true,
+                      birth: true,
+                      nickName: true,
+                      phone: true,
+                    },
                   },
                 },
+                take: 3,
               },
-              take: 3,
             },
-          },
-        });
-      for (const suggestAccount of followingOfAccountSuggest.followings) {
-        arrFriendRelative.push({
-          id: suggestAccount.following.id,
-          fullName: suggestAccount.following.fullName,
-          phone: suggestAccount.following.phone,
-          aboutMe: suggestAccount.following.aboutMe,
-          address: suggestAccount.following.address,
-          birth: suggestAccount.following.birth,
-          nickName: suggestAccount.following.nickName,
-        });
+          });
+        for (const suggestAccount of followingOfAccountSuggest.followings) {
+          arrFriendRelative.push({
+            id: suggestAccount.following.id,
+            fullName: suggestAccount.following.fullName,
+            phone: suggestAccount.following.phone,
+            aboutMe: suggestAccount.following.aboutMe,
+            address: suggestAccount.following.address,
+            birth: suggestAccount.following.birth,
+            nickName: suggestAccount.following.nickName,
+          });
+        }
       }
+      return arrFriendRelative;
     }
-    return arrFriendRelative;
+    catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
-  catch(error) {
-    console.error(error);
-    throw new HttpException(error, HttpStatus.BAD_REQUEST);
-  }
+
 }
