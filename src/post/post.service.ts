@@ -14,7 +14,7 @@ import { PostForQuery } from './dto/PostForQuery';
 
 @Injectable()
 export class PostService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   async createPost(
     postRequest: PostForCreate,
     account: AccountForToken,
@@ -506,6 +506,74 @@ export class PostService {
           };
         }),
       };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getPostsByAccount(
+    accountId: string,
+    query: PaginationAndFilter,
+  ): Promise<Array<PostOfAccountForResponse>> {
+    try {
+      const pagination: PaginationAndFilter = {
+        limit: query.limit > 0 ? query.limit : 5,
+        pageNo: query.pageNo > 0 ? query.pageNo : 1,
+      };
+      const take = Number(pagination.limit);
+      const skip =
+        pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo - 1);
+      const postOfAccount = await this.prismaService.post.findMany({
+        where: {
+          accountId: accountId,
+        },
+        select: {
+          id: true,
+          contentText: true,
+          account: {
+            select: {
+              id: true,
+              fullName: true,
+              avata: true,
+            },
+          },
+          comments: {
+            select: {
+              id: true,
+              account: {
+                select: {
+                  id: true,
+                  avata: true,
+                  fullName: true,
+                },
+              },
+              contentCmt: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          totalComment: true,
+          totalReaction: true,
+          totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+        },
+        skip: skip,
+        take: take,
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      return postOfAccount;
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);

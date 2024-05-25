@@ -45,7 +45,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) {}
+  ) { }
 
   @Post()
   @ApiBody({ type: PostForCreate })
@@ -110,6 +110,33 @@ export class PostController {
     @Query() query: PaginationAndFilter,
   ) {
     return await this.postService.getValidPostByAccount(req?.user?.id, query);
+  }
+
+  @Get('/get-posts-account')
+  @ApiOkResponse({
+    type: PostOfAccountForResponse,
+  })
+  @ApiQuery({
+    type: PaginationAndFilter,
+  })
+  async getPostsByAccount(@Request() req, @Query() query: PaginationAndFilter) {
+    const { id } = req?.user;
+    return await this.postService.getPostsByAccount(id, query);
+  }
+
+  @Get('/get-posts-other-account/:id')
+  @ApiOkResponse({
+    type: PostOfAccountForResponse,
+  })
+  @ApiParam({ name: 'id', type: String })
+  @ApiQuery({
+    type: PaginationAndFilter,
+  })
+  async getPostsByOtherAccount(
+    @Param('id') ortherAccountId: string,
+    @Query() query: PaginationAndFilter,
+  ) {
+    return await this.postService.getPostsByAccount(ortherAccountId, query);
   }
 
   @Get('/:id')
