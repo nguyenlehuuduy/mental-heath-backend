@@ -35,7 +35,6 @@ import { PostForQuery } from './dto/PostForQuery';
 import { PostForFullResponse, PostForResponse } from './dto/PostForResponse';
 import { PostForUpdate } from './dto/PostForUpdate';
 import { PostService } from './post.service';
-import { PostOfAccountForResponse } from './dto/PostForProfile';
 
 @ApiTags('post')
 @Controller('post')
@@ -46,7 +45,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) {}
+  ) { }
 
   @Post()
   @ApiBody({ type: PostForCreate })
@@ -149,8 +148,12 @@ export class PostController {
     return await this.postService.getPostDetail(id);
   }
 
+  @Get('/admin/get-all-post')
+  @ApiOkResponse({
+    type: PostForFullResponse,
+  })
   @Roles(Role.Admin)
   async getAllPost(@Query() query: PostForQuery) {
-    return this.postService.getAllPost(query);
+    return await this.postService.getAllPost(query);
   }
 }

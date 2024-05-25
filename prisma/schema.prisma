@@ -129,7 +129,7 @@ model FollowShip {
 
 model Post {
   id               String         @id @default(uuid())
-  contentText      String
+  contentText      String         @db.Text
   accountId        String
   totalReaction    Int?
   totalComment     Int?
@@ -155,10 +155,10 @@ model PermisionPost {
 model Image {
   id          String     @id @default(uuid())
   path        String
-  accountId   String
-  postId      String
-  account     Account    @relation(fields: [accountId], references: [id])
-  post        Post       @relation(fields: [postId], references: [id])
+  accountId   String?
+  postId      String?
+  account     Account?   @relation(fields: [accountId], references: [id])
+  post        Post?      @relation(fields: [postId], references: [id])
   typeImage   TypeImage? @relation(fields: [typeImageId], references: [id])
   typeImageId String?
   created_at  DateTime   @default(now())

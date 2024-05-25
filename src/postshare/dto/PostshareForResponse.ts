@@ -1,27 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class ImageForResponse {
+
+export class PostshareForResponse {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  fieldname: string;
+  id: string;
+
+  @ApiProperty()
+  @IsString()
+  content?: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  originalname: string;
+  postId: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  size: number;
+  accountId: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: Date })
   @IsNotEmpty()
-  filename: string;
+  created_at: Date | string;
 
-  @ApiProperty()
+  @ApiProperty({ type: Date })
   @IsNotEmpty()
-  mimetype: string;
+  updated_at: Date | string;
 }
