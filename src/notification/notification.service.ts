@@ -69,6 +69,26 @@ export class NotificationService {
     try {
       return await this.prismaService.notification.findMany({
         where: { accountId: account.id },
+        select: {
+          typeNotification: {
+            select: {
+              id: true,
+              thumbnailNoti: true,
+              typeName: true,
+              description: true,
+            }
+          },
+          accountId: true,
+          postId: true,
+          commentId: true,
+          created_at: true,
+          followerId: true,
+          id: true,
+          messageNotifications: true,
+          postShareId: true,
+          reactionId: true,
+          updated_at: true,
+        }
       });
     } catch (error) {
       console.error(error);
