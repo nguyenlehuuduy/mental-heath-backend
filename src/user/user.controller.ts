@@ -13,13 +13,9 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { AccountForToken } from 'src/auth/dto/AccountForToken';
-import {
-  Action,
-  CaslAbilityFactory,
-} from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { Role } from 'src/decorator/role.enum';
 import { Roles } from 'src/decorator/roles.decorator';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
@@ -29,6 +25,7 @@ import { AdminAccountForResponse } from './dto/AdminAccountForResponse';
 import { UserForResponse } from './dto/UserForResponse';
 import { UserForUpdate } from './dto/UserForUpdate';
 import { UserService } from './user.service';
+import { Profile } from './dto/ProfileResponse';
 
 @ApiTags('user')
 @Controller('user')
@@ -38,8 +35,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private caslAbilityFactory: CaslAbilityFactory,
-  ) {}
+  ) { }
 
   @Patch('/update-account-admin')
   @ApiOkResponse({
@@ -59,36 +55,56 @@ export class UserController {
     type: [UserForResponse],
   })
   async suggestFollowForAccount(@Request() req) {
-    return await this.userService.getSuggestedFollowAccounts(req?.user?.id);
+    const { id } = req?.user;
+    return await this.userService.getSuggestedFollowAccounts(id);
   }
 
-  @Patch(':id')
+  @Patch('/update-account')
   @ApiBody({ type: UserForUpdate })
   @ApiOkResponse({
     type: UserForResponse,
   })
-  async updateUser(
-    @Body() userInfoRequest: UserForUpdate,
-    @Param('id') userId: string,
+  async updateUser(@Request() req, @Body() userForUpdate: UserForUpdate) {
+    const { id } = req?.user;
+    const infoUser = await this.userService.getDetailUserById(id);
+    const { user } = infoUser;
+    return await this.userService.updateUser(user.id, userForUpdate);
+  }
+
+  @Get('/my-account-profile')
+  @ApiBody({ type: Profile })
+  @ApiOkResponse({
+    type: Profile,
+  })
+  async getProfile(@Request() req) {
+    const { id } = req?.user;
+    return await this.userService.getDetailUserById(id);
+  }
+
+  @Get('/other-account-profile/:id')
+  @ApiBody({ type: Profile })
+  @ApiOkResponse({
+    type: Profile,
+  })
+  @ApiParam({ name: 'id', type: String })
+  async getOtherAccountProfile(
+    @Param('id') otherAccountId: string,
     @Request() req,
   ) {
-    try {
-      const account = new AccountForToken();
-      account.id = req?.user?.id;
-      const infoUser = await this.userService.getDetailUserById(userId);
-      const accountInPermission = new UserForResponse();
-      accountInPermission.id = infoUser?.id;
-      const ability = this.caslAbilityFactory.defineAbility(account);
-      if (ability.can(Action.Update, accountInPermission)) {
-        return await this.userService.updateUser(userInfoRequest);
-      }
-      throw new HttpException(
-        'You are not allowed to update this',
-        HttpStatus.FORBIDDEN,
-      );
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    const { id } = req?.user;
+    if (id === otherAccountId) {
+      throw new HttpException('FORBIDDEN', HttpStatus.FORBIDDEN);
     }
+    const is_follow = await this.userService.checkFollowShip(
+      id,
+      otherAccountId,
+    );
+    const profileOtherAccount =
+      await this.userService.getDetailUserById(otherAccountId);
+
+    return {
+      profileOtherAccount,
+      is_follow,
+    };
   }
 }
