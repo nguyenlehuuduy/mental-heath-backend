@@ -33,4 +33,12 @@ export class NotificationForUpdate {
   @IsOptional()
   @Type()
   typeNotificationId?: string;
+
+  @IsOptional()
+  @IsString()
+  thumbnailNoti?: string;
+
+  @IsOptional()
+  @IsString()
+  typeName: string;
 }

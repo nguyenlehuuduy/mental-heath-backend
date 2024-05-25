@@ -29,6 +29,12 @@ export class NotificationForResponse {
   typeNotificationId: string;
 
   @ApiProperty()
+  thumbnailNoti: string;
+
+  @ApiProperty()
+  typeName: string;
+
+  @ApiProperty()
   created_at: Date;
 
   @ApiProperty()

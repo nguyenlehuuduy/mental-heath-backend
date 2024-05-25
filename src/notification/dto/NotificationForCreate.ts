@@ -24,4 +24,10 @@ export class NotificationForCreate {
 
   @ApiProperty()
   typeNotificationId: string;
+
+  @ApiProperty()
+  thumbnailNoti: string;
+
+  @ApiProperty()
+  typeName: string;
 }

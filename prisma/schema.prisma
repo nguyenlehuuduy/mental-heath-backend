@@ -223,6 +223,8 @@ model Notification {
   created_at           DateTime         @default(now())
   updated_at           DateTime         @updatedAt
   typeNotificationId   String
+  thumbnailNoti        String
+  typeName             String
   typeNotification     TypeNotification @relation(fields: [typeNotificationId], references: [id])
 }
 

@@ -22,7 +22,24 @@ export class NotificationService {
           postShareId: notification.postShareId,
           commentId: notification.commentId,
           followerId: notification.followerId,
+          thumbnailNoti: notification.thumbnailNoti,
+          typeName: notification.typeName,
         },
+        select: {
+          accountId: true,
+          commentId: true,
+          created_at: true,
+          followerId: true,
+          id: true,
+          messageNotifications: true,
+          postId: true,
+          postShareId: true,
+          reactionId: true,
+          thumbnailNoti: true,
+          typeName: true,
+          typeNotificationId: true,
+          updated_at: true,
+        }
       });
     } catch (error) {
       console.error(error);
@@ -42,6 +59,23 @@ export class NotificationService {
         data: {
           messageNotifications: notification.messageNotifications,
           typeNotificationId: notification.typeNotificationId,
+          thumbnailNoti: notification.thumbnailNoti,
+          typeName: notification.typeName,
+        },
+        select: {
+          id: true,
+          accountId: true,
+          postId: true,
+          postShareId: true,
+          commentId: true,
+          reactionId: true,
+          followerId: true,
+          messageNotifications: true,
+          typeName: true,
+          created_at: true,
+          updated_at: true,
+          typeNotificationId: true,
+          thumbnailNoti: true,
         },
       });
     } catch (error) {
