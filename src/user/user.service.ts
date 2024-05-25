@@ -4,20 +4,26 @@ import { UserForUpdate } from './dto/UserForUpdate';
 import { UserForResponse } from './dto/UserForResponse';
 import { AdminAccountForPut } from './dto/AdminAccountForPut';
 import { AdminAccountForResponse } from './dto/AdminAccountForResponse';
-import { Profile } from './dto/ProfileResponse';
+import { UserDetailForResponse } from './dto/UserDetailForResponse';
 
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) { }
-  async getDetailUserById(id: string): Promise<{
-    user: Profile;
-    followerCount: number;
-    followingsCount: number;
-  }> {
+  async getDetailUserById(id: string): Promise<UserDetailForResponse> {
     try {
       const user = await this.prismaService.account.findUnique({
         where: { id: id },
         select: {
+          _count: {
+            select: {
+              posts: true,
+              followers: true,
+              followings: true,
+              postShares: true,
+              images: true,
+              RequestFollow: true
+            }
+          },
           id: true,
           fullName: true,
           phone: true,
@@ -26,26 +32,63 @@ export class UserService {
           birth: true,
           address: true,
           avata: true,
+          images: {
+            select: {
+              path: true,
+              postId: true,
+              typeImage: {
+                select: {
+                  typeImageName: true
+                }
+              }
+            }
+          },
+          followers: {
+            select: {
+              follower: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  avata: true,
+                  nickName: true,
+                }
+              },
+            }
+          },
+          followings: {
+            select: {
+              following: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  avata: true,
+                  nickName: true,
+                }
+              }
+            }
+          }
         },
       });
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
-      const followerCount = await this.prismaService.followShip.count({
-        where: {
-          followingId: id,
-        },
-      });
-      const followingsCount = await this.prismaService.followShip.count({
-        where: {
-          followerId: id,
-        },
-      });
+
       return {
-        user,
-        followerCount,
-        followingsCount,
-      };
+        objectCount: user._count,
+        user: {
+          id: user.id,
+          aboutMe: user.aboutMe,
+          address: user.address,
+          avata: user.avata,
+          birth: user.birth,
+          fullName: user.fullName,
+          nickName: user.nickName,
+          phone: user.phone
+        },
+        follower: user.followers.map(item => item.follower),
+        followings: user.followings.map(item => item.following),
+        image: user.images
+      }
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
