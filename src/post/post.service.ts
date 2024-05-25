@@ -162,37 +162,7 @@ export class PostService {
       };
       const take = Number(pagination.limit);
       const skip =
-        pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo);
-      const select = {
-        id: true,
-        contentText: true,
-        account: {
-          select: {
-            id: true,
-            fullName: true,
-            phone: true,
-            aboutMe: true,
-            nickName: true,
-            birth: true,
-            address: true,
-          },
-        },
-        created_at: true,
-        updated_at: true,
-        images: {
-          select: {
-            accountId: true,
-            postId: true,
-            path: true,
-          },
-        },
-        totalComment: true,
-        totalShare: true,
-        totalReaction: true,
-        reactions: true,
-        comments: true,
-        postShares: true,
-      };
+        pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo - 1);
       const totalRecord = await this.prismaService.post.count({
         where: {
           accountId: {
@@ -213,7 +183,54 @@ export class PostService {
         orderBy: {
           created_at: 'desc',
         },
-        select: select,
+        select: {
+          id: true,
+          contentText: true,
+          account: {
+            select: {
+              id: true,
+              fullName: true,
+              phone: true,
+              aboutMe: true,
+              nickName: true,
+              birth: true,
+              address: true,
+              avata: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+          totalComment: true,
+          totalShare: true,
+          totalReaction: true,
+          reactions: true,
+          postShares: true,
+          comments: {
+            select: {
+              account: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                  avata: true,
+                },
+              },
+              created_at: true,
+              contentCmt: true,
+            },
+            take: 3,
+            orderBy: {
+              created_at: 'desc',
+            },
+          },
+        },
         skip: skip,
         take: take,
       });
@@ -233,6 +250,19 @@ export class PostService {
           totalReaction: item.reactions.length ?? 0,
           totalShare: item.postShares.length ?? 0,
           updated_at: item.updated_at,
+          comment_recent:
+            item.comments.map((item) => {
+              return {
+                account: {
+                  avata: item.account.avata,
+                  id: item.account.id,
+                  name: item.account.fullName,
+                  nick_name: item.account.nickName,
+                },
+                content: item.contentCmt,
+                created_at: String(item.created_at),
+              };
+            }) ?? [],
         });
       }
       return {
@@ -249,32 +279,35 @@ export class PostService {
     }
   }
 
-  async getAllPost(query: PostForQuery): Promise<Array<PostForResponse>> {
-    const take = Number(query.limit ?? 5);
-    const skip = take * Number(query.pageNo ? query.pageNo - 1 : 0);
+  async getAllPost(query: PostForQuery): Promise<PostForFullResponse> {
     try {
-      return this.prismaService.post.findMany({
+      const pagination: PaginationAndFilter = {
+        limit: query.limit > 0 ? query.limit : 5,
+        pageNo: query.pageNo > 0 ? query.pageNo : 1,
+      };
+      const dataResponse: Array<PostForResponse> = [];
+      const take = Number(pagination.limit);
+      const skip =
+        pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo - 1);
+      const totalRecord = await this.prismaService.post.count();
+      const result = await this.prismaService.post.findMany({
         select: {
           id: true,
           contentText: true,
-          accountId: true,
           account: {
             select: {
               id: true,
-              email: true,
               fullName: true,
+              phone: true,
+              aboutMe: true,
               nickName: true,
               birth: true,
               address: true,
-              aboutMe: true,
-              phone: true,
+              avata: true,
             },
           },
           created_at: true,
           updated_at: true,
-          totalComment: true,
-          totalReaction: true,
-          totalShare: true,
           images: {
             select: {
               accountId: true,
@@ -282,28 +315,71 @@ export class PostService {
               path: true,
             },
           },
-        },
-        where: {
-          contentText: {
-            contains: query.contentTextKey,
-          },
-          AND: {
-            account: {
-              fullName: { contains: query.nameAccountKey },
-              email: { contains: query.emailAccountKey },
-              created_at: {
-                lte: query.createdDateTo,
-                gte: query.createdDateFrom,
+          totalComment: true,
+          totalShare: true,
+          totalReaction: true,
+          reactions: true,
+          postShares: true,
+          comments: {
+            select: {
+              account: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                  avata: true,
+                },
               },
+              created_at: true,
+              contentCmt: true,
+            },
+            take: 3,
+            orderBy: {
+              created_at: 'desc',
             },
           },
         },
         orderBy: {
-          [query.sortBy]: query.orderBy,
+          created_at: 'desc',
         },
         skip: skip,
         take: take,
       });
+      for (const item of result) {
+        dataResponse.push({
+          account: item.account,
+          accountId: item.account.id,
+          contentText: item.contentText,
+          created_at: item.created_at,
+          id: item.id,
+          images: item.images,
+          totalComment: item.comments.length ?? 0,
+          totalReaction: item.reactions.length ?? 0,
+          totalShare: item.postShares.length ?? 0,
+          updated_at: item.updated_at,
+          comment_recent:
+            item.comments.map((item) => {
+              return {
+                account: {
+                  avata: item.account.avata,
+                  id: item.account.id,
+                  name: item.account.fullName,
+                  nick_name: item.account.nickName,
+                },
+                content: item.contentCmt,
+                created_at: String(item.created_at),
+              };
+            }) ?? [],
+        });
+      }
+      return {
+        data: dataResponse,
+        pagination: {
+          ...pagination,
+          totalPage: Math.round(totalRecord / pagination.limit),
+          totalRecord: totalRecord ?? 0,
+        },
+      };
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
@@ -312,7 +388,7 @@ export class PostService {
 
   async getPostDetail(postId: string): Promise<PostForResponse> {
     try {
-      return await this.prismaService.post.findUnique({
+      const result = await this.prismaService.post.findUnique({
         where: {
           id: postId,
         },
@@ -334,9 +410,49 @@ export class PostService {
           },
           created_at: true,
           updated_at: true,
-          totalComment: true,
-          totalReaction: true,
-          totalShare: true,
+          reactions: {
+            select: {
+              account: {
+                select: {
+                  avata: true,
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                },
+              },
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          comments: {
+            select: {
+              account: {
+                select: {
+                  avata: true,
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                },
+              },
+              contentCmt: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          postShares: {
+            select: {
+              account: {
+                select: {
+                  avata: true,
+                  id: true,
+                  fullName: true,
+                  nickName: true,
+                },
+              },
+              created_at: true,
+              updated_at: true,
+            },
+          },
           images: {
             select: {
               accountId: true,
@@ -346,6 +462,50 @@ export class PostService {
           },
         },
       });
+
+      return {
+        ...result,
+        totalComment: result.comments.length ?? 0,
+        totalShare: result.postShares.length ?? 0,
+        totalReaction: result.reactions.length ?? 0,
+        all_comment: result.comments.map((item) => {
+          return {
+            account: {
+              avata: item.account.avata,
+              id: item.account.id,
+              name: item.account.fullName,
+              nick_name: item.account.nickName,
+            },
+            content: item.contentCmt,
+            created_at: String(item.created_at),
+            updated_at: String(item.updated_at),
+          };
+        }),
+        all_like_info: result.reactions.map((item) => {
+          return {
+            account: {
+              avata: item.account.avata,
+              id: item.account.id,
+              name: item.account.fullName,
+              nick_name: item.account.nickName,
+            },
+            created_at: String(item.created_at),
+            updated_at: String(item.updated_at),
+          };
+        }),
+        all_share_info: result.postShares.map((item) => {
+          return {
+            account: {
+              avata: item.account.avata,
+              id: item.account.id,
+              name: item.account.fullName,
+              nick_name: item.account.nickName,
+            },
+            created_at: String(item.created_at),
+            updated_at: String(item.updated_at),
+          };
+        }),
+      };
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);

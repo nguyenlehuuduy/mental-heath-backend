@@ -15,13 +15,20 @@ import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
 import { FollowModule } from './follow/follow.module';
+import { PostshareModule } from './postshare/postshare.module';
 import { MockDataModule } from './mock-data/mock-data.module';
 import { ChatBotModule } from './chat-bot/chat-bot.module';
 import { NotificationModule } from './notification/notification.module';
 import { TypenotificationModule } from './type-notification/typenotification.module';
+import { ConfigModule } from '@nestjs/config';
+import { UploadS3Module } from './uploads3/uploads3.module';
+import { SearchModule } from './search/search.module';
+import { PermissionPostModule } from './permission-post/permission-post.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    UploadS3Module,
     AuthModule,
     PrismaModule,
     TokenModule,
@@ -43,12 +50,15 @@ import { TypenotificationModule } from './type-notification/typenotification.mod
     CommentModule,
     FileModule,
     FollowModule,
+    PostshareModule,
     MockDataModule,
     ChatBotModule,
     NotificationModule,
     TypenotificationModule,
+    SearchModule,
+    PermissionPostModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

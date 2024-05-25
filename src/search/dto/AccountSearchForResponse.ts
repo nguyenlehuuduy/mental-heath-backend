@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class UserForResponse {
+export class AccountSearchForResponse {
   @ApiProperty()
   @IsNotEmpty()
   id: string;
@@ -10,11 +10,6 @@ export class UserForResponse {
   @IsNotEmpty()
   @IsString()
   fullName: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  phone: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -28,16 +23,7 @@ export class UserForResponse {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsDateString()
-  birth: Date;
-
-  @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   address: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  avata?: string;
+  avata: string;
 }
