@@ -7,10 +7,14 @@ import { RoomChatBotForGet } from './dto/RoomChatBotForGet';
 import { MessageForResponse } from './dto/MessageForResponse';
 import { RoomBotInfForResponse } from './dto/RoomBotInfForResponse';
 import { SendMessageForPost } from './dto/ContentMessage';
+import { SocketIoGateway } from 'src/socket-io/socket-io.gateway';
 
 @Injectable()
 export class RoomMessageService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private socketGateway: SocketIoGateway
+  ) { }
   async postRoomMessage(
     room: RoomMessageForPost,
     account: AccountForToken,
@@ -185,7 +189,7 @@ export class RoomMessageService {
     message: SendMessageForPost,
   ): Promise<MessageForResponse> {
     try {
-      return await this.prismaService.messages.create({
+      const response = await this.prismaService.messages.create({
         data: {
           ownerId: account.id,
           roomId: message.roomId,
@@ -209,6 +213,16 @@ export class RoomMessageService {
           updated_at: true,
         },
       });
+      //demo
+      this.socketGateway.sendMessage(response.roomId, {
+        authorId: '1',
+        conversationId: '2',
+        createdAt: '3',
+        id: '4',
+        message: 'chao may',
+        updatedAt: '1312',
+      })
+      return response;
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
