@@ -25,6 +25,7 @@ import { UploadS3Module } from './uploads3/uploads3.module';
 import { SearchModule } from './search/search.module';
 import { PermissionPostModule } from './permission-post/permission-post.module';
 import { TypeMessageModule } from './type-message/type-message.module';
+import { TypeImageModule } from './type-image/type-image.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { TypeMessageModule } from './type-message/type-message.module';
     SearchModule,
     PermissionPostModule,
     TypeMessageModule,
+    TypeImageModule,
   ],
   controllers: [],
   providers: [],
