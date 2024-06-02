@@ -41,6 +41,22 @@ model Account {
   Target                Target[]
   RequestFollow         RequestFollow[] @relation("RequestFollow")
   AcceptOrCancelRequest RequestFollow[] @relation("AcceptOrCancelRequest")
+  Notification          Notification[]
+}
+
+model Notification {
+  id                   String           @id @default(uuid())
+  account              Account[]
+  postId               String?
+  postShareId          String?
+  commentId            String?
+  reactionId           String?
+  followerId           String?
+  messageNotifications String?
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+  typeNotificationId   String
+  typeNotification     TypeNotification @relation(fields: [typeNotificationId], references: [id])
 }
 
 model ActionUser {
@@ -209,21 +225,6 @@ model Reaction {
   postShare   PostShare? @relation(fields: [postShareId], references: [id])
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
-}
-
-model Notification {
-  id                   String           @id @default(uuid())
-  accountId            String
-  postId               String?
-  postShareId          String?
-  commentId            String?
-  reactionId           String?
-  followerId           String?
-  messageNotifications String?
-  created_at           DateTime         @default(now())
-  updated_at           DateTime         @updatedAt
-  typeNotificationId   String
-  typeNotification     TypeNotification @relation(fields: [typeNotificationId], references: [id])
 }
 
 model TypeNotification {

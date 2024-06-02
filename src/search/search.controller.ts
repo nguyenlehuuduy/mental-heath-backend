@@ -27,4 +27,11 @@ export class SearchController {
   async searchPosts(@Query('keyword') keyword: string, @Request() account: AccountForToken) {
     return await this.searchService.searchPostsService(keyword, account);
   }
+
+  @Roles(Role.Admin)
+  @Get('accounts-by-admin')
+  @ApiBody({ type: AccountSearchForResponse })
+  async searchAccountByAdmin(@Query('keyword') keyword: string) {
+    return await this.searchService.searchAccountsByAdminService(keyword);
+  }
 }

@@ -23,7 +23,7 @@ import { NotificationForUpdate } from './dto/NotificationForUpdate';
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Roles(Role.User)
 export class NotificationController {
-  constructor(private notificationService: NotificationService) {}
+  constructor(private notificationService: NotificationService) { }
 
   @Post()
   async createNotification(@Body() notification: NotificationForCreate) {
@@ -46,5 +46,11 @@ export class NotificationController {
   @Get()
   async getAllNotificationByAccount(@Request() req) {
     return await this.notificationService.getAllNotifiAccount(req?.user);
+  }
+
+  @Roles(Role.Admin)
+  @Get("/admin")
+  async getAllNotificationByAdmin() {
+    return await this.notificationService.getAllNotificationByAdmin();
   }
 }

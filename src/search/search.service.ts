@@ -93,4 +93,50 @@ export class SearchService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
+
+  async searchAccountsByAdminService(
+    keyword: string,
+  ): Promise<Array<AccountSearchForResponse>> {
+    try {
+      const regex = new RegExp(keyword, 'i');
+      const accounts = await this.prismaService.account.findMany({
+        where: {
+          OR: [
+            {
+              fullName: {
+                contains: regex.source,
+              },
+            },
+            {
+              email: {
+                contains: regex.source,
+              },
+            },
+            {
+              id: {
+                contains: regex.source,
+              },
+            },
+            {
+              phone: {
+                contains: regex.source,
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          fullName: true,
+          aboutMe: true,
+          nickName: true,
+          address: true,
+          avata: true
+        },
+      });
+      return accounts;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
