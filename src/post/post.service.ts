@@ -15,7 +15,7 @@ import { PostOfAccountForResponse } from './dto/PostForProfile';
 
 @Injectable()
 export class PostService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
   async createPost(
     postRequest: PostForCreate,
     account: AccountForToken,
@@ -387,7 +387,10 @@ export class PostService {
     }
   }
 
-  async getPostDetail(postId: string): Promise<PostForResponse> {
+  async getPostDetail(
+    account: AccountForToken,
+    postId: string,
+  ): Promise<PostForResponse> {
     try {
       const result = await this.prismaService.post.findUnique({
         where: {
@@ -469,6 +472,9 @@ export class PostService {
         totalComment: result.comments.length ?? 0,
         totalShare: result.postShares.length ?? 0,
         totalReaction: result.reactions.length ?? 0,
+        is_liked: !!result.reactions.find(
+          (item) => item.account.id === account.id,
+        ),
         all_comment: result.comments.map((item) => {
           return {
             account: {
