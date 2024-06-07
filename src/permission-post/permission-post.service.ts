@@ -22,6 +22,7 @@ export class PermissionPostService {
     try {
       return await this.prismaService.permisionPost.create({
         data: {
+          id: permission.id,
           code: permission.code,
           description: permission.description,
         }

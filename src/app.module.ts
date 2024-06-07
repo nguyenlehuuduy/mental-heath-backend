@@ -26,6 +26,7 @@ import { SearchModule } from './search/search.module';
 import { PermissionPostModule } from './permission-post/permission-post.module';
 import { TypeMessageModule } from './type-message/type-message.module';
 import { TypeImageModule } from './type-image/type-image.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { TypeImageModule } from './type-image/type-image.module';
     PermissionPostModule,
     TypeMessageModule,
     TypeImageModule,
+    ImageModule,
   ],
   controllers: [],
   providers: [],

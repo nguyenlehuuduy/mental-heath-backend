@@ -1,6 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
 
 export class TypeImageForCreate {
-  @ApiProperty()
+  id: string;
   typeImageName: string;
 }

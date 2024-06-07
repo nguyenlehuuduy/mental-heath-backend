@@ -6,7 +6,7 @@ import { TypeImageForResponse } from './dto/TypeImageForResponse';
 
 @Injectable()
 export class TypeImageService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async getAllTypeNoti(): Promise<Array<TypeImageForResponse>> {
     try {
@@ -23,7 +23,8 @@ export class TypeImageService {
     try {
       return await this.prismaService.typeImage.create({
         data: {
-            typeImageName: createTypeImage.typeImageName,
+          id: createTypeImage.id,
+          typeImageName: createTypeImage.typeImageName,
         },
       });
     } catch (error) {
@@ -42,7 +43,7 @@ export class TypeImageService {
           id: id,
         },
         data: {
-            typeImageName: updateTypeImage.typeImageName,
+          typeImageName: updateTypeImage.typeImageName,
         },
       });
     } catch (error) {

@@ -118,7 +118,7 @@ export class PostController {
   })
   async getPostsByAccount(@Request() req, @Query() query: PaginationAndFilter) {
     const { id } = req?.user;
-    return await this.postService.getPostsByAccount(id, query);
+    return await this.postService.getPostsByMyself(id, query);
   }
 
   @Get('/get-posts-other-account/:id')
@@ -128,9 +128,10 @@ export class PostController {
   })
   async getPostsByOtherAccount(
     @Param('id') ortherAccountId: string,
+    @Request() req,
     @Query() query: PaginationAndFilter,
   ) {
-    return await this.postService.getPostsByAccount(ortherAccountId, query);
+    return await this.postService.getPostsByAccount(ortherAccountId, query, req?.user);
   }
 
   @Get('/:id')
