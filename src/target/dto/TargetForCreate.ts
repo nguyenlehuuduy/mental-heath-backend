@@ -1,14 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
-
 export class TargetForCreate {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  content?: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  idTargetAccount?: string;
+  content: string;
+  idTargetAccount: string;
+  actionUserId: string
 }

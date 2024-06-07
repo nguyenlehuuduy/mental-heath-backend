@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { TargetForCreate } from './dto/TargetForCreate';
 import { TargetForResponse } from './dto/TargetForResponse';
 import { TargetForUpdate } from './dto/TargetForUpdate';
@@ -9,20 +8,19 @@ import { TargetForUpdate } from './dto/TargetForUpdate';
 export class TargetService {
   constructor(private prismaService: PrismaService) { }
   async createTarget(
-    targetForCreate: TargetForCreate,
-    account: AccountForToken): Promise<TargetForResponse> {
+    targetForCreate: TargetForCreate): Promise<TargetForResponse> {
     try {
       return await this.prismaService.target.create({
         data: {
           content: targetForCreate.content,
-          idTargetAccount: targetForCreate.idTargetAccount,
-          accountId: account.id,
+          actionUserId: targetForCreate.actionUserId,
+          targetAccountId: targetForCreate.idTargetAccount
         },
         select: {
           id: true,
           content: true,
-          idTargetAccount: true,
-          accountId: true,
+          actionUserId: true,
+          targetAccountId: true,
         }
       });
     } catch (error) {
@@ -31,15 +29,22 @@ export class TargetService {
   }
 
 
-  async getTarget() {
+  async getTarget(): Promise<Array<TargetForResponse>> {
     try {
-      return await this.prismaService.target.findMany()
+      return await this.prismaService.target.findMany({
+        select: {
+          id: true,
+          content: true,
+          actionUserId: true,
+          targetAccountId: true,
+        }
+      })
     } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async updateTarget(targetForUpdate: TargetForUpdate, id)
+  async updateTarget(targetForUpdate: TargetForUpdate, id: string)
     : Promise<TargetForResponse> {
     try {
       return await this.prismaService.target.update({
@@ -48,8 +53,15 @@ export class TargetService {
         },
         data: {
           content: targetForUpdate.content,
-          idTargetAccount: targetForUpdate.idTargetAccount,
+          actionUserId: targetForUpdate.actionUserId,
+          targetAccountId: targetForUpdate.idTargetAccountId
         },
+        select: {
+          id: true,
+          content: true,
+          actionUserId: true,
+          targetAccountId: true,
+        }
       });
     } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);

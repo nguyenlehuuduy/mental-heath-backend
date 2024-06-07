@@ -42,6 +42,7 @@ model Account {
   RequestFollow         RequestFollow[] @relation("RequestFollow")
   AcceptOrCancelRequest RequestFollow[] @relation("AcceptOrCancelRequest")
   Notification          Notification[]
+  ActionUser            ActionUser[]
 }
 
 model Notification {
@@ -60,19 +61,21 @@ model Notification {
 }
 
 model ActionUser {
-  id         String  @id @default(uuid())
-  actionCode String
-  idTarget   String
-  target     Target? @relation(fields: [idTarget], references: [id])
+  id          String   @id @default(uuid())
+  actionCode  String
+  description String
+  Target      Target[]
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id])
 }
 
 model Target {
-  id              String       @id @default(uuid())
+  id              String     @id @default(uuid())
   content         String?
-  idTargetAccount String?
-  targetAccount   Account?     @relation(fields: [accountId], references: [id])
-  accountId       String?
-  ActionUser      ActionUser[]
+  targetAccount   Account?   @relation(fields: [targetAccountId], references: [id])
+  targetAccountId String?
+  actionUser      ActionUser @relation(fields: [actionUserId], references: [id])
+  actionUserId    String
 }
 
 model SessionAccount {
