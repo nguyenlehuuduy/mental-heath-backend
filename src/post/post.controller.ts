@@ -45,7 +45,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private caslAbilityFactory: CaslAbilityFactory,
-  ) { }
+  ) {}
 
   @Post()
   @ApiBody({ type: PostForCreate })
@@ -139,8 +139,8 @@ export class PostController {
   @ApiOkResponse({
     type: PostForResponse,
   })
-  async getDetailPostById(@Param('id') id: string) {
-    return await this.postService.getPostDetail(id);
+  async getDetailPostById(@Request() req, @Param('id') id: string) {
+    return await this.postService.getPostDetail(req?.user, id);
   }
 
   @Get('/admin/get-all-post')
