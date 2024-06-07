@@ -28,6 +28,7 @@ import { TypeMessageModule } from './type-message/type-message.module';
 import { TypeImageModule } from './type-image/type-image.module';
 import { TargetModule } from './target/target.module';
 import { ImageModule } from './image/image.module';
+import { ActionUserModule } from './action-user/action-user.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { ImageModule } from './image/image.module';
     TypeImageModule,
     TargetModule,
     ImageModule,
+    ActionUserModule,
 
   ],
   controllers: [],
