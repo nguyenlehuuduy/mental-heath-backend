@@ -3,16 +3,18 @@ import { AccountForToken } from 'src/auth/dto/AccountForToken';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFileServiceS3 } from 'src/uploads3/uploads3.service';
 import { ImageForResponse } from './dto/ImageForResponse';
+import { TYPE_IMAGE } from 'src/helpers/constant';
 
 @Injectable()
 export class FileService {
   constructor(
     private uploads3: UploadFileServiceS3,
     private prismaService: PrismaService,
-  ) {}
+  ) { }
   async uploadImageOfPost(
     file: Express.Multer.File,
     account: AccountForToken,
+    permissionPostId: string
   ): Promise<ImageForResponse> {
     try {
       const image_path = await this.uploadImage(file, 'posts');
@@ -20,6 +22,8 @@ export class FileService {
         data: {
           path: image_path,
           accountId: account.id,
+          typeImageId: TYPE_IMAGE.POST,
+          postId: permissionPostId
         },
       });
       return {

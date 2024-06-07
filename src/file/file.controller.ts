@@ -20,14 +20,15 @@ import { Role } from 'src/decorator/role.enum';
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Roles(Role.User)
 export class FileController {
-  constructor(private fileService: FileService) {}
+  constructor(private fileService: FileService) { }
   @Post('/upload-posts')
   @UseInterceptors(FileInterceptor('image'))
   async uploadImageOfPost(
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
+    permissionPostId: string
   ) {
-    return this.fileService.uploadImageOfPost(file, req?.user);
+    return this.fileService.uploadImageOfPost(file, req?.user, permissionPostId);
   }
 
   @Post('/upload-avata')
