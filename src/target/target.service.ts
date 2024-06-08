@@ -14,7 +14,7 @@ export class TargetService {
         data: {
           content: targetForCreate.content,
           actionUserId: targetForCreate.actionUserId,
-          targetAccountId: targetForCreate.idTargetAccount
+          targetAccountId: targetForCreate.targetAccountId
         },
         select: {
           id: true,
@@ -54,7 +54,7 @@ export class TargetService {
         data: {
           content: targetForUpdate.content,
           actionUserId: targetForUpdate.actionUserId,
-          targetAccountId: targetForUpdate.idTargetAccountId
+          targetAccountId: targetForUpdate.targetAccountId
         },
         select: {
           id: true,

@@ -1,5 +1,5 @@
 export class TargetForUpdate {
   content?: string;
-  idTargetAccountId?: string;
+  targetAccountId?: string;
   actionUserId?: string;
 }
