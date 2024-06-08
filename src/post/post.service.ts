@@ -16,7 +16,7 @@ import { PERMISSION_POST } from 'src/helpers/constant';
 
 @Injectable()
 export class PostService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   async createPost(
     postRequest: PostForCreate,
     account: AccountForToken,
@@ -468,6 +468,7 @@ export class PostService {
           accountId: true,
           account: {
             select: {
+              avata: true,
               id: true,
               email: true,
               fullName: true,
@@ -507,6 +508,9 @@ export class PostService {
               contentCmt: true,
               created_at: true,
               updated_at: true,
+            },
+            orderBy: {
+              created_at: 'desc',
             },
           },
           permissionPost: {
