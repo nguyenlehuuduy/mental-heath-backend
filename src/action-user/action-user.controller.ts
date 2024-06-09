@@ -19,7 +19,7 @@ export class ActionUserController {
       private readonly actionUserService: ActionUserService,
     ) { }
 
-    @Post()
+  @Post()
   @Roles(Role.User)
   async createActionUser(@Body() actionUserForCreate: ActionUserForCreate,
     @Request() req) {
@@ -27,7 +27,7 @@ export class ActionUserController {
   }
 
   @Get()
-  async getActionUserByUserId() {
+  async getActionUser() {
     return await this.actionUserService.getActionUser()
   }
   @Patch(":id")
