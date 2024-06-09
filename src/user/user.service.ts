@@ -8,7 +8,7 @@ import { UserDetailForResponse } from './dto/UserDetailForResponse';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
   async getDetailUserById(id: string): Promise<UserDetailForResponse> {
     try {
       const user = await this.prismaService.account.findUnique({
@@ -21,8 +21,8 @@ export class UserService {
               followings: true,
               postShares: true,
               images: true,
-              RequestFollow: true
-            }
+              RequestFollow: true,
+            },
           },
           id: true,
           fullName: true,
@@ -32,16 +32,24 @@ export class UserService {
           birth: true,
           address: true,
           avata: true,
+          email: true,
+          banner: true,
+          favorite: {
+            select: {
+              id: true,
+              nameFavorite: true,
+            },
+          },
           images: {
             select: {
               path: true,
               postId: true,
               typeImage: {
                 select: {
-                  typeImageName: true
-                }
-              }
-            }
+                  typeImageName: true,
+                },
+              },
+            },
           },
           followers: {
             select: {
@@ -51,9 +59,9 @@ export class UserService {
                   fullName: true,
                   avata: true,
                   nickName: true,
-                }
+                },
               },
-            }
+            },
           },
           followings: {
             select: {
@@ -63,10 +71,10 @@ export class UserService {
                   fullName: true,
                   avata: true,
                   nickName: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
       });
       if (!user) {
@@ -83,12 +91,18 @@ export class UserService {
           birth: user.birth,
           fullName: user.fullName,
           nickName: user.nickName,
-          phone: user.phone
+          banner: user.banner,
+          phone: user.phone,
+          email: user.email,
+          favorite: user.favorite.map((item) => ({
+            id: item.id,
+            nameFavorite: item.nameFavorite,
+          })),
         },
-        follower: user.followers.map(item => item.follower),
-        followings: user.followings.map(item => item.following),
-        image: user.images
-      }
+        follower: user.followers.map((item) => item.follower),
+        followings: user.followings.map((item) => item.following),
+        image: user.images,
+      };
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
@@ -148,10 +162,16 @@ export class UserService {
     userInfoRequest: UserForUpdate,
   ): Promise<UserForResponse> {
     try {
+      userInfoRequest.favorite.map(async (item) => {
+        await this.prismaService.account.update({
+          where: { id },
+          data: { favorite: { connect: { id: item } } },
+        });
+      });
+
       return await this.prismaService.account.update({
         where: { id: id },
         data: {
-          id: userInfoRequest.id,
           fullName: userInfoRequest.fullName,
           phone: userInfoRequest.phone,
           aboutMe: userInfoRequest.aboutMe,
@@ -259,11 +279,9 @@ export class UserService {
         }
       }
       return arrFriendRelative;
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
-
 }

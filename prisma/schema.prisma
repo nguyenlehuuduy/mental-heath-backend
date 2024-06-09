@@ -19,11 +19,12 @@ model Account {
   email                 String
   password              String
   phone                 String?
-  aboutMe               String?
+  aboutMe               String?         @db.Text
   nickName              String?
   birth                 DateTime?
   address               String?
   avata                 String?
+  banner                String?
   posts                 Post[]
   followers             FollowShip[]    @relation("Followings")
   followings            FollowShip[]    @relation("Followers")
@@ -43,6 +44,16 @@ model Account {
   AcceptOrCancelRequest RequestFollow[] @relation("AcceptOrCancelRequest")
   Notification          Notification[]
   ActionUser            ActionUser[]
+  favorite              FavoriteTag[]
+}
+
+model FavoriteTag {
+  id                  String    @id @default(uuid())
+  nameFavorite        String
+  descriptionFavorite String
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+  Account             Account[]
 }
 
 model Notification {

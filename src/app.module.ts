@@ -29,6 +29,7 @@ import { TypeImageModule } from './type-image/type-image.module';
 import { TargetModule } from './target/target.module';
 import { ImageModule } from './image/image.module';
 import { ActionUserModule } from './action-user/action-user.module';
+import { FavoriteTagModule } from './favorite-tag/favorite-tag.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { ActionUserModule } from './action-user/action-user.module';
     TargetModule,
     ImageModule,
     ActionUserModule,
+    FavoriteTagModule,
 
   ],
   controllers: [],

@@ -196,6 +196,7 @@ export class AuthService {
           nickName: true,
           phone: true,
           avata: true,
+          banner: true,
         },
       });
     } catch (error) {

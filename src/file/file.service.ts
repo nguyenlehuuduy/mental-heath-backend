@@ -38,9 +38,46 @@ export class FileService {
     }
   }
 
-  async uploadAvataUser(file: Express.Multer.File): Promise<ImageForResponse> {
+  async uploadAvataUser(file: Express.Multer.File, account: AccountForToken): Promise<ImageForResponse> {
     try {
       const image_path = await this.uploadImage(file, 'accounts/avata');
+      await this.prismaService.account.update({
+        where: { id: account.id },
+        data: { avata: image_path }
+      })
+      await this.prismaService.image.create({
+        data: {
+          path: image_path,
+          accountId: account.id,
+          typeImageId: TYPE_IMAGE.AVATAR_USER,
+        },
+      });
+      return {
+        fieldname: 'image',
+        filename: image_path,
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+        size: file.size,
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async uploadBannerImageUser(file: Express.Multer.File, account: AccountForToken): Promise<ImageForResponse> {
+    try {
+      const image_path = await this.uploadImage(file, 'accounts/banners');
+      await this.prismaService.account.update({
+        where: { id: account.id },
+        data: { banner: image_path }
+      })
+      await this.prismaService.image.create({
+        data: {
+          path: image_path,
+          accountId: account.id,
+          typeImageId: TYPE_IMAGE.BANNER_USER,
+        },
+      });
       return {
         fieldname: 'image',
         filename: image_path,

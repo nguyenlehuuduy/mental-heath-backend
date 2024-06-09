@@ -3,6 +3,7 @@
 export const TYPE_IMAGE = {
   POST: 'genzmth@786521',
   AVATAR_USER: 'genzmth@754235',
+  BANNER_USER: 'genzmth@954235',
 }
 
 export const PERMISSION_POST = {
