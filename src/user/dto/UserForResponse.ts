@@ -7,4 +7,6 @@ export class UserForResponse {
   birth: Date;
   address: string;
   avata?: string;
+  idFollowShip?: string;
+  followStatus?: boolean;
 }

@@ -240,6 +240,7 @@ export class UserService {
       });
       const followingOfMySelf = infoAccount.followings;
       const arrFriendRelative: Array<UserForResponse> = [];
+
       for (const following of followingOfMySelf) {
         const followingOfAccountSuggest =
           await this.prismaService.account.findUnique({
@@ -259,6 +260,7 @@ export class UserService {
                       birth: true,
                       nickName: true,
                       phone: true,
+                      avata: true,
                     },
                   },
                 },
@@ -266,16 +268,23 @@ export class UserService {
               },
             },
           });
+        const followingListId = followingOfMySelf.map((item) => item.id);
         for (const suggestAccount of followingOfAccountSuggest.followings) {
-          arrFriendRelative.push({
-            id: suggestAccount.following.id,
-            fullName: suggestAccount.following.fullName,
-            phone: suggestAccount.following.phone,
-            aboutMe: suggestAccount.following.aboutMe,
-            address: suggestAccount.following.address,
-            birth: suggestAccount.following.birth,
-            nickName: suggestAccount.following.nickName,
-          });
+          if (
+            suggestAccount.following.id !== userId &&
+            followingListId.includes(suggestAccount.following.id) === false
+          ) {
+            arrFriendRelative.push({
+              id: suggestAccount.following.id,
+              fullName: suggestAccount.following.fullName,
+              phone: suggestAccount.following.phone,
+              aboutMe: suggestAccount.following.aboutMe,
+              address: suggestAccount.following.address,
+              birth: suggestAccount.following.birth,
+              nickName: suggestAccount.following.nickName,
+              avata: suggestAccount.following.avata,
+            });
+          }
         }
       }
       return arrFriendRelative;

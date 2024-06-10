@@ -92,9 +92,35 @@ export class FollowService {
           followingId: follow.reciverId,
         },
       });
+
       if (existFollowShip) {
         return;
       }
+
+      const validCreateRoom = await this.prismaService.followShip.findFirst({
+        where: {
+          followerId: { in: [follow.senderId, follow.reciverId] },
+          followingId: { in: [follow.senderId, follow.reciverId] },
+        },
+      });
+
+      const room =
+        validCreateRoom &&
+        (await this.prismaService.roomMessage.create({
+          data: {
+            nameRoom: '',
+          },
+        }));
+
+      if (room) {
+        [follow.senderId, follow.reciverId].map(async (item) => {
+          await this.prismaService.roomMessage.update({
+            data: { accountInRoom: { connect: { id: item } } },
+            where: { id: room.id },
+          });
+        });
+      }
+
       return await this.prismaService.followShip
         .create({
           data: {
@@ -117,6 +143,7 @@ export class FollowService {
           }
         });
     } catch (error) {
+      console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
@@ -145,11 +172,16 @@ export class FollowService {
               nickName: true,
               birth: true,
               address: true,
+              avata: true,
             },
           },
+          id: true,
         },
       });
-      return result.map((item) => item.following);
+      return result.map((item) => ({
+        ...item.following,
+        idFollowShip: item.id,
+      }));
     } catch (error) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -157,6 +189,17 @@ export class FollowService {
 
   async getAllFollowers(id: string): Promise<Array<UserForResponse>> {
     try {
+      const accountInf = await this.prismaService.account.findUnique({
+        where: { id },
+        select: {
+          followings: true,
+        },
+      });
+
+      const following: Array<string> = accountInf.followings.map(
+        (item) => item.followingId,
+      );
+
       const result = await this.prismaService.followShip.findMany({
         where: { followingId: id },
         select: {
@@ -169,11 +212,17 @@ export class FollowService {
               nickName: true,
               birth: true,
               address: true,
+              avata: true,
             },
           },
+          id: true,
         },
       });
-      return result.map((item) => item.follower);
+      return result.map((item) => ({
+        ...item.follower,
+        idFollowShip: item.id,
+        followStatus: !!following.includes(item.follower.id),
+      }));
     } catch (error) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }

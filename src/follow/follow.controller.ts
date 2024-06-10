@@ -20,7 +20,6 @@ import { RequestFollowForResponse } from './dto/RequestFollowForResponse';
 import { FollowService } from './follow.service';
 
 @Controller('follow')
-@ApiTags('follows')
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Roles(Role.User)
 export class FollowController {

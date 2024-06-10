@@ -3,10 +3,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AccountSearchForResponse } from './dto/AccountSearchForResponse';
 import { ContentSearchForResponse } from './dto/ContentSearchForResponse';
 import { AccountForToken } from 'src/auth/dto/AccountForToken';
+import { PERMISSION_POST } from 'src/helpers/constant';
 
 @Injectable()
 export class SearchService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
   async searchAccountsService(
     keyword: string,
   ): Promise<Array<AccountSearchForResponse>> {
@@ -33,7 +34,7 @@ export class SearchService {
           aboutMe: true,
           nickName: true,
           address: true,
-          avata: true
+          avata: true,
         },
       });
       return accounts;
@@ -45,22 +46,28 @@ export class SearchService {
 
   async searchPostsService(
     keyword: string,
-    account: AccountForToken
+    account: AccountForToken,
   ): Promise<Array<ContentSearchForResponse>> {
     try {
       const regex = new RegExp(keyword, 'i');
       const posts = await this.prismaService.post.findMany({
         where: {
+          OR: [
+            {
+              account: {
+                followers: {
+                  some: {
+                    followerId: account.id,
+                  },
+                },
+              },
+              permissionPostId: PERMISSION_POST.FOLLOW,
+            },
+            { permissionPostId: PERMISSION_POST.PUBLIC },
+          ],
           contentText: {
             contains: regex.source,
           },
-          account: {
-            followers: {
-              some: {
-                followingId: account.id
-              }
-            }
-          }
         },
         select: {
           id: true,
@@ -74,14 +81,9 @@ export class SearchService {
           },
           images: {
             select: {
-              path: true
+              path: true,
             },
-            take: 1
-          },
-          permissionPost: {
-            where: {
-              code: { not: "private" }
-            }
+            take: 1,
           },
           created_at: true,
           updated_at: true,
@@ -130,7 +132,7 @@ export class SearchService {
           aboutMe: true,
           nickName: true,
           address: true,
-          avata: true
+          avata: true,
         },
       });
       return accounts;
