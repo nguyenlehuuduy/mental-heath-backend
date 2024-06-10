@@ -1,5 +1,5 @@
 export class TargetForCreate {
   content: string;
-  idTargetAccount: string;
+  targetAccountId: string;
   actionUserId: string
 }
