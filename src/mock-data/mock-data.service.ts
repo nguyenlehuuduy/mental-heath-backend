@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class MockDataService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async createAccount() {
     try {
       const result = await this.prisma.account.createMany({
@@ -135,32 +135,32 @@ export class MockDataService {
           {
             name: 'Trang chu',
             iconUrl: '/home_icon.svg',
-            url: 'home',
+            url: '/home',
           },
           {
             name: 'Chuyen gia',
             iconUrl: '/professional_icon.svg"',
-            url: 'pro',
+            url: '/pro',
           },
           {
             name: 'Ban be',
             iconUrl: '/friend_icon.svg',
-            url: 'friends',
+            url: '/friends',
           },
           {
             name: 'Chat Bot',
             iconUrl: '/chatbot_icon.svg',
-            url: 'chat-bot',
+            url: '/chat-bot',
           },
           {
             name: 'Blog',
             iconUrl: '/chatbot_icon.svg',
-            url: 'blog',
+            url: '/blog',
           },
           {
             name: 'Khong gian ao',
             iconUrl: '/virtual_space_icon.svg',
-            url: 'virtual-space',
+            url: '/virtual-space',
           },
         ],
       });

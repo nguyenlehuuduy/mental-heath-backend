@@ -1,27 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
 
 export class NotificationForCreate {
-  @ApiProperty()
-  accountId: string;
-
-  @ApiProperty()
+  accountId: Array<string>;
   postId?: string;
-
-  @ApiProperty()
   postShareId?: string;
-
-  @ApiProperty()
   commentId?: string;
-
-  @ApiProperty()
   reactionId?: string;
-
-  @ApiProperty()
   followerId?: string;
-
-  @ApiProperty()
   messageNotifications?: string;
-
-  @ApiProperty()
   typeNotificationId: string;
 }

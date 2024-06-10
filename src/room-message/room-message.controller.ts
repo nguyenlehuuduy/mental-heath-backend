@@ -16,14 +16,13 @@ import { RoomMessageService } from './room-message.service';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
 import { AuthorizationGuard } from 'src/guard/authorization.guard';
 import { SendMessageForPost } from './dto/ContentMessage';
-import { SocketIoGateway } from 'src/socket-io/socket-io.gateway';
 
 @ApiTags('room-message')
 @Controller('room-message')
 @Roles(Role.User)
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class RoomMessageController {
-  constructor(private roomMessageService: RoomMessageService) { }
+  constructor(private roomMessageService: RoomMessageService) {}
   @Post()
   @ApiBody({ type: RoomMessageForPost })
   @ApiOkResponse({

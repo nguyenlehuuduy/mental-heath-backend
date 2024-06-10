@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -44,7 +45,7 @@ export class CommentController {
     private caslAbilityFactory: CaslAbilityFactory,
     private followService: FollowService,
     private postService: PostService,
-  ) {}
+  ) { }
   @Post()
   @ApiBody({ type: CommentForCreate })
   @ApiOkResponse({
@@ -110,5 +111,10 @@ export class CommentController {
       return await this.commentService.deleteComment(id, req?.user);
     }
     throw new HttpException('you have not permision', HttpStatus.UNAUTHORIZED);
+  }
+
+  @Get("/posts/:id")
+  async getAllCommentByIdPost(@Param("id") idPost: string, @Request() req) {
+    return await this.commentService.getAllCommentByIdPost(idPost, req?.user)
   }
 }

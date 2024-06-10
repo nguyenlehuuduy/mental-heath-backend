@@ -4,10 +4,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CommentForCreate } from './dto/CommentForCreate';
 import { CommentForResponse } from './dto/CommentForResponse';
 import { CommentForUpdate } from './dto/CommentForUpdate';
+import { PERMISSION_POST } from 'src/helpers/constant';
 
 @Injectable()
 export class CommentService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   async createComment(
     commentRequest: CommentForCreate,
   ): Promise<CommentForResponse> {
@@ -74,6 +75,66 @@ export class CommentService {
       return await this.prismaService.comment.findUnique({
         where: { id },
       });
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getAllCommentByIdPost(postId: string, account: AccountForToken): Promise<Array<CommentForResponse>> {
+    try {
+      return await this.prismaService.comment.findMany({
+        where: {
+          AND: [
+            {
+              postId
+            },
+            {
+              OR: [
+                {
+                  post: {
+                    permissionPostId: PERMISSION_POST.PUBLIC
+                  },
+                },
+                {
+                  post: {
+                    permissionPostId: PERMISSION_POST.FOLLOW,
+                    account: {
+                      followers: {
+                        some: {
+                          followerId: account.id
+                        }
+                      }
+                    },
+                  },
+                },
+                {
+                  post: {
+                    accountId: account.id
+                  }
+                }]
+            }
+          ]
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        select: {
+          id: true,
+          contentCmt: true,
+          accountId: true,
+          created_at: true,
+          updated_at: true,
+          account: {
+            select: {
+              id: true,
+              fullName: true,
+              avata: true,
+              nickName: true
+            }
+          }
+        },
+      })
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);

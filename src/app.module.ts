@@ -26,6 +26,10 @@ import { SearchModule } from './search/search.module';
 import { PermissionPostModule } from './permission-post/permission-post.module';
 import { TypeMessageModule } from './type-message/type-message.module';
 import { TypeImageModule } from './type-image/type-image.module';
+import { TargetModule } from './target/target.module';
+import { ImageModule } from './image/image.module';
+import { ActionUserModule } from './action-user/action-user.module';
+import { FavoriteTagModule } from './favorite-tag/favorite-tag.module';
 
 @Module({
   imports: [
@@ -61,6 +65,11 @@ import { TypeImageModule } from './type-image/type-image.module';
     PermissionPostModule,
     TypeMessageModule,
     TypeImageModule,
+    TargetModule,
+    ImageModule,
+    ActionUserModule,
+    FavoriteTagModule,
+
   ],
   controllers: [],
   providers: [],

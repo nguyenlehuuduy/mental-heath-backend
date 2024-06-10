@@ -13,8 +13,8 @@ import { SocketIoGateway } from 'src/socket-io/socket-io.gateway';
 export class RoomMessageService {
   constructor(
     private prismaService: PrismaService,
-    private socketGateway: SocketIoGateway
-  ) { }
+    private socketGateway: SocketIoGateway,
+  ) {}
   async postRoomMessage(
     room: RoomMessageForPost,
     account: AccountForToken,
@@ -68,10 +68,12 @@ export class RoomMessageService {
     account: AccountForToken,
   ): Promise<Array<RoomMessageForGet>> {
     try {
+      const excludedId = '0308051202024GZMTH';
       const allRoomValid = await this.prismaService.roomMessage.findMany({
         where: {
           accountInRoom: {
             some: { id: account.id },
+            none: { id: excludedId },
           },
         },
         select: {
@@ -79,19 +81,35 @@ export class RoomMessageService {
           created_at: true,
           updated_at: true,
           accountInRoom: {
-            select: { fullName: true, email: true, id: true },
+            select: { fullName: true, email: true, id: true, avata: true },
           },
         },
       });
-      return allRoomValid.map((item) => {
-        return {
-          ...item,
-          nameRoom: item.accountInRoom
-            .map((item) => item.id !== account.id && item.fullName)
-            .filter(Boolean)
-            .join(','),
-        };
-      });
+
+      const roomMessagesWithLastMessage = await Promise.all(
+        allRoomValid.map(async (room) => {
+          const lastMessage = await this.prismaService.messages.findFirst({
+            where: { roomId: room.id },
+            orderBy: { created_at: 'desc' },
+          });
+
+          return {
+            ...room,
+            nameRoom: room.accountInRoom
+              .map((item) => item.id !== account.id && item.fullName)
+              .filter(Boolean)
+              .join(','),
+            avatar: room.accountInRoom
+              .map((item) => item.id !== account.id && item.avata)
+              .filter(Boolean)
+              .join(','),
+            lastMessage: lastMessage ? lastMessage.contentText : null,
+            lastMessageTime: lastMessage ? lastMessage.created_at : null,
+          };
+        }),
+      );
+
+      return roomMessagesWithLastMessage;
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
@@ -221,7 +239,7 @@ export class RoomMessageService {
         id: '4',
         message: 'chao may',
         updatedAt: '1312',
-      })
+      });
       return response;
     } catch (error) {
       console.error(error);

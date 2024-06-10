@@ -26,13 +26,28 @@ export class FileController {
   async uploadImageOfPost(
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
+    permissionPostId: string,
   ) {
-    return this.fileService.uploadImageOfPost(file, req?.user);
+    return this.fileService.uploadImageOfPost(
+      file,
+      req?.user,
+      permissionPostId,
+    );
   }
 
   @Post('/upload-avata')
   @UseInterceptors(FileInterceptor('image'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return this.fileService.uploadAvataUser(file);
+  async uploadImageAvataAccount(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() req,
+  ) {
+    return this.fileService.uploadAvataUser(file, req?.user);
+  }
+
+  @Post('/upload-banner')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    console.log('file', file);
+    return this.fileService.uploadBannerImageUser(file, req?.user);
   }
 }

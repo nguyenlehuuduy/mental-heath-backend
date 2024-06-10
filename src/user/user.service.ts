@@ -32,6 +32,14 @@ export class UserService {
           birth: true,
           address: true,
           avata: true,
+          email: true,
+          banner: true,
+          favorite: {
+            select: {
+              id: true,
+              nameFavorite: true,
+            },
+          },
           images: {
             select: {
               path: true,
@@ -83,7 +91,14 @@ export class UserService {
           birth: user.birth,
           fullName: user.fullName,
           nickName: user.nickName,
+          banner: user.banner,
           phone: user.phone,
+          email: user.email,
+          favorite: user.favorite.map((item) => ({
+            id: item.id,
+            nameFavorite: item.nameFavorite,
+          })),
+
         },
         follower: user.followers.map((item) => item.follower),
         followings: user.followings.map((item) => item.following),
@@ -148,10 +163,16 @@ export class UserService {
     userInfoRequest: UserForUpdate,
   ): Promise<UserForResponse> {
     try {
+      userInfoRequest.favorite.map(async (item) => {
+        await this.prismaService.account.update({
+          where: { id },
+          data: { favorite: { connect: { id: item } } },
+        });
+      });
+
       return await this.prismaService.account.update({
         where: { id: id },
         data: {
-          id: userInfoRequest.id,
           fullName: userInfoRequest.fullName,
           phone: userInfoRequest.phone,
           aboutMe: userInfoRequest.aboutMe,
@@ -283,6 +304,7 @@ export class UserService {
       });
       return allUsers;
     } catch (error) {
+
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }

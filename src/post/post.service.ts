@@ -12,6 +12,7 @@ import { PostForUpdate } from './dto/PostForUpdate';
 import { PaginationAndFilter } from 'src/common/schema/pagination';
 import { PostForQuery } from './dto/PostForQuery';
 import { PostOfAccountForResponse } from './dto/PostForProfile';
+import { PERMISSION_POST } from 'src/helpers/constant';
 
 @Injectable()
 export class PostService {
@@ -38,6 +39,7 @@ export class PostService {
               data: listImageUpload,
             },
           },
+          permissionPostId: postRequest.permissionPostId
         },
         select: {
           id: true,
@@ -66,6 +68,13 @@ export class PostService {
               path: true,
             },
           },
+          permissionPost: {
+            select: {
+              code: true,
+              description: true,
+              id: true,
+            }
+          }
         },
       });
     } catch (error) {
@@ -112,6 +121,13 @@ export class PostService {
               path: true,
             },
           },
+          permissionPost: {
+            select: {
+              id: true,
+              code: true,
+              description: true
+            }
+          }
         },
       });
     } catch (error) {
@@ -173,13 +189,39 @@ export class PostService {
       });
       const result = await this.prismaService.post.findMany({
         where: {
-          accountId: {
-            in: [...followings, idAccount],
-          },
+          OR: [
+            {
+              accountId: idAccount,
+            },
+            {
+              AND: [{
+                permissionPost: {
+                  id: { equals: PERMISSION_POST.FOLLOW }
+                },
+                accountId: {
+                  in: followings,
+                },
+              }]
+            },
+            {
+              AND: [
+                {
+                  accountId: {
+                    in: [...followings, idAccount],
+                  },
+                },
+                {
+                  permissionPost: {
+                    id: { equals: PERMISSION_POST.PUBLIC }
+                  }
+                }
+              ],
+            }
+          ],
           created_at: {
             gte: sevenDaysAgo,
             lte: today,
-          },
+          }
         },
         orderBy: {
           created_at: 'desc',
@@ -231,6 +273,13 @@ export class PostService {
               created_at: 'desc',
             },
           },
+          permissionPost: {
+            select: {
+              id: true,
+              code: true,
+              description: true
+            }
+          }
         },
         skip: skip,
         take: take,
@@ -251,6 +300,11 @@ export class PostService {
           totalReaction: item.reactions.length ?? 0,
           totalShare: item.postShares.length ?? 0,
           updated_at: item.updated_at,
+          permissionPost: {
+            id: item.permissionPost?.id ?? PERMISSION_POST.PRIVATE,
+            description: item.permissionPost?.description ?? "",
+            code: item.permissionPost?.code ?? ""
+          },
           comment_recent:
             item.comments.map((item) => {
               return {
@@ -339,6 +393,13 @@ export class PostService {
               created_at: 'desc',
             },
           },
+          permissionPost: {
+            select: {
+              id: true,
+              code: true,
+              description: true
+            }
+          }
         },
         orderBy: {
           created_at: 'desc',
@@ -358,6 +419,11 @@ export class PostService {
           totalReaction: item.reactions.length ?? 0,
           totalShare: item.postShares.length ?? 0,
           updated_at: item.updated_at,
+          permissionPost: {
+            id: item.permissionPost.id,
+            code: item.permissionPost.code,
+            description: item.permissionPost.description
+          },
           comment_recent:
             item.comments.map((item) => {
               return {
@@ -387,7 +453,10 @@ export class PostService {
     }
   }
 
-  async getPostDetail(postId: string): Promise<PostForResponse> {
+  async getPostDetail(
+    account: AccountForToken,
+    postId: string,
+  ): Promise<PostForResponse> {
     try {
       const result = await this.prismaService.post.findUnique({
         where: {
@@ -399,6 +468,7 @@ export class PostService {
           accountId: true,
           account: {
             select: {
+              avata: true,
               id: true,
               email: true,
               fullName: true,
@@ -439,6 +509,16 @@ export class PostService {
               created_at: true,
               updated_at: true,
             },
+            orderBy: {
+              created_at: 'desc',
+            },
+          },
+          permissionPost: {
+            select: {
+              id: true,
+              code: true,
+              description: true
+            }
           },
           postShares: {
             select: {
@@ -469,6 +549,9 @@ export class PostService {
         totalComment: result.comments.length ?? 0,
         totalShare: result.postShares.length ?? 0,
         totalReaction: result.reactions.length ?? 0,
+        is_liked: !!result.reactions.find(
+          (item) => item.account.id === account.id,
+        ),
         all_comment: result.comments.map((item) => {
           return {
             account: {
@@ -513,7 +596,7 @@ export class PostService {
     }
   }
 
-  async getPostsByAccount(
+  async getPostsByMyself(
     accountId: string,
     query: PaginationAndFilter,
   ): Promise<Array<PostOfAccountForResponse>> {
@@ -527,7 +610,7 @@ export class PostService {
         pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo - 1);
       const postOfAccount = await this.prismaService.post.findMany({
         where: {
-          accountId: accountId,
+          accountId
         },
         select: {
           id: true,
@@ -553,6 +636,121 @@ export class PostService {
               created_at: true,
               updated_at: true,
             },
+          },
+          permissionPost: {
+            select: {
+              id: true,
+              code: true,
+              description: true
+            }
+          },
+          totalComment: true,
+          totalReaction: true,
+          totalShare: true,
+          images: {
+            select: {
+              accountId: true,
+              postId: true,
+              path: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+        },
+        skip: skip,
+        take: take,
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      return postOfAccount;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getPostsByAccount(
+    accountId: string,
+    query: PaginationAndFilter,
+    myself: AccountForToken
+  ): Promise<Array<PostOfAccountForResponse>> {
+    try {
+      const pagination: PaginationAndFilter = {
+        limit: query.limit > 0 ? query.limit : 5,
+        pageNo: query.pageNo > 0 ? query.pageNo : 1,
+      };
+      const account = await this.prismaService.account.findUnique({
+        where: { id: myself.id },
+        select: {
+          followings: true,
+        },
+      });
+      const take = Number(pagination.limit);
+      const skip =
+        pagination.pageNo <= 1 ? 0 : take * Number(pagination.pageNo - 1);
+      const postOfAccount = await this.prismaService.post.findMany({
+        where: {
+          OR: [
+            {
+              AND: [{
+                permissionPost: {
+                  id: PERMISSION_POST.FOLLOW
+                },
+                accountId: {
+                  in: account.followings.map(item => item.followingId),
+                },
+              }]
+            },
+            {
+              AND: [
+                {
+                  accountId: {
+                    in: [...account.followings.map(item => item.followingId), accountId],
+                  },
+                },
+                {
+                  permissionPost: {
+                    id: PERMISSION_POST.PUBLIC
+                  }
+                }
+              ],
+            }
+          ],
+          accountId
+        },
+        select: {
+          id: true,
+          contentText: true,
+          account: {
+            select: {
+              id: true,
+              fullName: true,
+              avata: true,
+            },
+          },
+          comments: {
+            select: {
+              id: true,
+              account: {
+                select: {
+                  id: true,
+                  avata: true,
+                  fullName: true,
+                },
+              },
+              contentCmt: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          permissionPost: {
+            select: {
+              id: true,
+              code: true,
+              description: true
+            }
           },
           totalComment: true,
           totalReaction: true,
