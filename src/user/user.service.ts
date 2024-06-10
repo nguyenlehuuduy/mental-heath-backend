@@ -8,7 +8,7 @@ import { UserDetailForResponse } from './dto/UserDetailForResponse';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
   async getDetailUserById(id: string): Promise<UserDetailForResponse> {
     try {
       const user = await this.prismaService.account.findUnique({
@@ -21,8 +21,8 @@ export class UserService {
               followings: true,
               postShares: true,
               images: true,
-              RequestFollow: true
-            }
+              RequestFollow: true,
+            },
           },
           id: true,
           fullName: true,
@@ -38,10 +38,10 @@ export class UserService {
               postId: true,
               typeImage: {
                 select: {
-                  typeImageName: true
-                }
-              }
-            }
+                  typeImageName: true,
+                },
+              },
+            },
           },
           followers: {
             select: {
@@ -51,9 +51,9 @@ export class UserService {
                   fullName: true,
                   avata: true,
                   nickName: true,
-                }
+                },
               },
-            }
+            },
           },
           followings: {
             select: {
@@ -63,10 +63,10 @@ export class UserService {
                   fullName: true,
                   avata: true,
                   nickName: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
       });
       if (!user) {
@@ -83,12 +83,12 @@ export class UserService {
           birth: user.birth,
           fullName: user.fullName,
           nickName: user.nickName,
-          phone: user.phone
+          phone: user.phone,
         },
-        follower: user.followers.map(item => item.follower),
-        followings: user.followings.map(item => item.following),
-        image: user.images
-      }
+        follower: user.followers.map((item) => item.follower),
+        followings: user.followings.map((item) => item.following),
+        image: user.images,
+      };
     } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
@@ -259,11 +259,32 @@ export class UserService {
         }
       }
       return arrFriendRelative;
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
-
+  async getAllUsers(): Promise<Array<UserForResponse>> {
+    try {
+      const allUsers = await this.prismaService.account.findMany({
+        select: {
+          id: true,
+          fullName: true,
+          phone: true,
+          aboutMe: true,
+          nickName: true,
+          birth: true,
+          address: true,
+          roles: true,
+          avata: true,
+          updated_at: true,
+          created_at: true,
+        },
+      });
+      return allUsers;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

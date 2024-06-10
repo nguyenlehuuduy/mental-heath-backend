@@ -33,9 +33,7 @@ import { Profile } from './dto/ProfileResponse';
 @Roles(Role.User)
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-  ) { }
+  constructor(private readonly userService: UserService) {}
 
   @Patch('/update-account-admin')
   @ApiOkResponse({
@@ -48,6 +46,15 @@ export class UserController {
     return await this.userService.updateAdministratorAccount(
       accountForUpdateAdminRole,
     );
+  }
+
+  @Get('/get-all-users')
+  @ApiOkResponse({
+    type: [UserForResponse],
+  })
+  @Roles(Role.Admin)
+  async getAllUsers() {
+    return await this.userService.getAllUsers();
   }
 
   @Get('/suggest-follow')
