@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Role } from 'src/decorator/role.enum';
 import { Roles } from 'src/decorator/roles.decorator';
 import { AuthenticationGuard } from 'src/guard/authentication.guard';
@@ -11,26 +20,29 @@ import { FavoriteForUpdate } from './dto/FavoriteTagForUpdate';
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Roles(Role.User)
 export class FavoriteTagController {
-  constructor(private readonly favoriteService: FavoriteTagService) { }
+  constructor(private readonly favoriteService: FavoriteTagService) {}
   @Post()
   @Roles(Role.Admin)
   async createFavoriteTag(@Body() favorite: FavoriteForCreate) {
-    return await this.favoriteService.createNewFavoriteTag(favorite)
+    return await this.favoriteService.createNewFavoriteTag(favorite);
   }
 
   @Patch(':id')
-  async updateFavoriteTag(@Param('id') id: string, @Body() favorite: FavoriteForUpdate) {
-    return await this.favoriteService.updateFavoriteTag(id, favorite)
+  async updateFavoriteTag(
+    @Param('id') id: string,
+    @Body() favorite: FavoriteForUpdate,
+  ) {
+    return await this.favoriteService.updateFavoriteTag(id, favorite);
   }
 
   @Get()
   async getAllFavoriteTag() {
-    return await this.favoriteService.getAllFavoriteTag()
+    return await this.favoriteService.getAllFavoriteTag();
   }
 
-  @Delete("id")
+  @Delete(':id')
   async deleteFavoriteTag(@Param('id') id: string) {
+    console.log('res');
     return await this.favoriteService.deleteFavoriteTag(id);
   }
-
 }
